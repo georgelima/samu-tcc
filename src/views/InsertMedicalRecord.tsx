@@ -7,6 +7,7 @@ import {
   TableCell,
   TableHead,
   TableRow,
+  Button,
 } from '@material-ui/core'
 import { Formik } from 'formik'
 import dateFns from 'date-fns'
@@ -260,6 +261,41 @@ const CONTRACTION_TYPE = {
   MODERATE: 'MODERATE',
 }
 
+const RN = {
+  LIVE: 'LIVE',
+  DEATH: 'DEATH',
+  DEQUI_PLACENTA: 'DEQUI_PLACENTA',
+}
+
+const PERFORMED_PROCEDURES = {
+  GUEDEL: 'GUEDEL',
+  ASPIRATION: 'ASPIRATION',
+  IOT: 'IOT',
+  VM: 'VM',
+  MASK_O2: 'MASK_O2',
+  CATHETER_02: 'CATHETER_02',
+  AMBU_VENTILATION: 'AMBU_VENTILATION',
+  CHEST_COMPRESSION: 'CHEST_COMPRESSION',
+  DEA: 'DEA',
+  CARDIAC_MONITORING: 'CARDIAC_MONITORING',
+  DEFIBRILLATION: 'DEFIBRILLATION',
+  CARDIPACEMAKERAC_MONITORING: 'CARDIPACEMAKERAC_MONITORING',
+  NECK_BRACE: 'NECK_BRACE',
+  IMMOBILIZATION: 'IMMOBILIZATION',
+  MMSS: 'MMSS',
+  MMII: 'MMII',
+  OXIMETER: 'OXIMETER',
+  CARDIOVERSION: 'CARDIOVERSION',
+  BANDAID: 'BANDAID',
+  RIGID_BOARD: 'RIGID_BOARD',
+  QUICK_TAKE: 'QUICK_TAKE',
+  HEATING: 'HEATING',
+  VENOUS_ACCESS: 'VENOUS_ACCESS',
+  BLEEDING_CONTROL: 'BLEEDING_CONTROL',
+  KED: 'KED',
+  OTHER: 'OTHER',
+}
+
 type setFieldValue = (name: string, value: null | string | string[]) => void
 
 const insertOrRemoveFromArray = (array: string[], setFieldValue: setFieldValue) => (
@@ -315,6 +351,8 @@ export const InsertMedicalRecord = () => {
       </Typography>
 
       <Formik
+        validateOnChange={false}
+        validateOnBlur={false}
         initialValues={{
           vtr: '',
           riskRating: RISK_RATING.GREEN,
@@ -411,6 +449,22 @@ export const InsertMedicalRecord = () => {
           labour: false,
           contractions: false,
           contractionType: '',
+          contractionNumber: '',
+          contractionMin: '',
+          amnioticSacBroke: false,
+          touchCm: '',
+          abortion: false,
+          vaginalBleeding: false,
+          rn: [] as string[],
+          firstApgar: '',
+          secondApgar: '',
+          physicalExaminationFindingsHead: '',
+          physicalExaminationFindingsNeck: '',
+          physicalExaminationFindingsChest: '',
+          physicalExaminationFindingsAbdomen: '',
+          physicalExaminationFindingsPelvis: '',
+          physicalExaminationFindingsExtremities: '',
+          performedProcedures: [] as string[],
         }}
         onSubmit={(values, { setSubmitting }) => console.log(values)}
       >
@@ -561,7 +615,7 @@ export const InsertMedicalRecord = () => {
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextInput
-                  name="addressNeighborhood"
+                  name="neighborhood"
                   label="Bairro"
                   value={values.neighborhood}
                   handleChange={setFieldValue}
@@ -570,7 +624,7 @@ export const InsertMedicalRecord = () => {
               </Grid>
               <Grid item xs={12} sm={4}>
                 <TextInput
-                  name="addressCity"
+                  name="city"
                   label="Cidade"
                   value={values.city}
                   handleChange={setFieldValue}
@@ -2646,7 +2700,7 @@ export const InsertMedicalRecord = () => {
                 />
               </Grid>
               {values.contractions && (
-                <Grid item xs={12} sm={4}>
+                <Grid item xs={12} sm={2}>
                   <Select
                     label="Contração"
                     name="contractionType"
@@ -2660,6 +2714,336 @@ export const InsertMedicalRecord = () => {
                   />
                 </Grid>
               )}
+              <Grid item xs={6} sm={1}>
+                <TextInput
+                  name="contractionNumber"
+                  label="N°"
+                  value={values.contractionNumber}
+                  handleChange={setFieldValue}
+                  errors={errors}
+                  type="number"
+                />
+              </Grid>
+              <Grid item xs={6} sm={1}>
+                <TextInput
+                  name="contractionMin"
+                  label="Min"
+                  value={values.contractionMin}
+                  handleChange={setFieldValue}
+                  errors={errors}
+                  type="number"
+                />
+              </Grid>
+              <Grid item xs={6} sm={1}>
+                <Switch
+                  name="amnioticSacBroke"
+                  value={values.amnioticSacBroke}
+                  label="Bolsa rota"
+                  handleChange={setFieldValue}
+                />
+              </Grid>
+              <Grid item xs={6} sm={2}>
+                <TextInput
+                  name="touchCm"
+                  label="Toque (cm/dilatação)"
+                  value={values.touchCm}
+                  handleChange={setFieldValue}
+                  errors={errors}
+                  type="number"
+                />
+              </Grid>
+              <Grid item xs={6} sm={2}>
+                <Switch
+                  name="abortion"
+                  value={values.abortion}
+                  label="Abortamento"
+                  handleChange={setFieldValue}
+                />
+              </Grid>
+              <Grid item xs={6} sm={2}>
+                <Switch
+                  name="vaginalBleeding"
+                  value={values.vaginalBleeding}
+                  label="Hemorragia Vaginal"
+                  handleChange={setFieldValue}
+                />
+              </Grid>
+            </Grid>
+            <SectionTitle text="RN" />
+            <Grid container spacing={16}>
+              <Grid item xs={12} sm={1}>
+                <Checkbox
+                  name="rn"
+                  label={'Vivo'}
+                  checked={values.rn.includes(RN.LIVE)}
+                  value={RN.LIVE}
+                  handleChange={insertOrRemoveFromArray(values.rn, setFieldValue)}
+                />
+              </Grid>
+              <Grid item xs={12} sm={1}>
+                <Checkbox
+                  name="rn"
+                  label={'Morto'}
+                  checked={values.rn.includes(RN.DEATH)}
+                  value={RN.DEATH}
+                  handleChange={insertOrRemoveFromArray(values.rn, setFieldValue)}
+                />
+              </Grid>
+              <Grid item xs={12} sm={2}>
+                <Checkbox
+                  name="rn"
+                  label={'Dequi Placenta'}
+                  checked={values.rn.includes(RN.DEQUI_PLACENTA)}
+                  value={RN.DEQUI_PLACENTA}
+                  handleChange={insertOrRemoveFromArray(values.rn, setFieldValue)}
+                />
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                <TextInput
+                  name="firstApgar"
+                  label="1° Apgar"
+                  value={values.firstApgar}
+                  handleChange={setFieldValue}
+                  errors={errors}
+                />
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                <TextInput
+                  name="secondApgar"
+                  label="2° Apgar"
+                  value={values.secondApgar}
+                  handleChange={setFieldValue}
+                  errors={errors}
+                />
+              </Grid>
+            </Grid>
+            <SectionTitle text="Achados do Exame físico" />
+            <Grid container spacing={16}>
+              <Grid item xs={12} sm={6}>
+                <TextInput
+                  name="physicalExaminationFindingsHead"
+                  label="Cabeça"
+                  value={values.physicalExaminationFindingsHead}
+                  handleChange={setFieldValue}
+                  errors={errors}
+                  multiline
+                  rows={2}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextInput
+                  name="physicalExaminationFindingsNeck"
+                  label="Pescoço"
+                  value={values.physicalExaminationFindingsNeck}
+                  handleChange={setFieldValue}
+                  errors={errors}
+                  multiline
+                  rows={2}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextInput
+                  name="physicalExaminationFindingsChest"
+                  label="Tórax"
+                  value={values.physicalExaminationFindingsChest}
+                  handleChange={setFieldValue}
+                  errors={errors}
+                  multiline
+                  rows={2}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextInput
+                  name="physicalExaminationFindingsAbdomen"
+                  label="Abdome"
+                  value={values.physicalExaminationFindingsAbdomen}
+                  handleChange={setFieldValue}
+                  errors={errors}
+                  multiline
+                  rows={2}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextInput
+                  name="physicalExaminationFindingsPelvis"
+                  label="Pelve"
+                  value={values.physicalExaminationFindingsPelvis}
+                  handleChange={setFieldValue}
+                  errors={errors}
+                  multiline
+                  rows={2}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextInput
+                  name="physicalExaminationFindingsExtremities"
+                  label="Extremidades"
+                  value={values.physicalExaminationFindingsExtremities}
+                  handleChange={setFieldValue}
+                  errors={errors}
+                  multiline
+                  rows={2}
+                />
+              </Grid>
+            </Grid>
+            <SectionTitle text="Procedimentos Realizados" />
+            <Checkbox
+              name="performedProcedures"
+              label="Guedel"
+              checked={values.performedProcedures.includes(PERFORMED_PROCEDURES.GUEDEL)}
+              value={PERFORMED_PROCEDURES.GUEDEL}
+              handleChange={insertOrRemoveFromArray(values.performedProcedures, setFieldValue)}
+            />
+            <Checkbox
+              name="performedProcedures"
+              label="Aspiração"
+              checked={values.performedProcedures.includes(PERFORMED_PROCEDURES.ASPIRATION)}
+              value={PERFORMED_PROCEDURES.ASPIRATION}
+              handleChange={insertOrRemoveFromArray(values.performedProcedures, setFieldValue)}
+            />
+            <Checkbox
+              name="performedProcedures"
+              label="IOT"
+              checked={values.performedProcedures.includes(PERFORMED_PROCEDURES.IOT)}
+              value={PERFORMED_PROCEDURES.IOT}
+              handleChange={insertOrRemoveFromArray(values.performedProcedures, setFieldValue)}
+            />
+            <Checkbox
+              name="performedProcedures"
+              label="V.M"
+              checked={values.performedProcedures.includes(PERFORMED_PROCEDURES.VM)}
+              value={PERFORMED_PROCEDURES.VM}
+              handleChange={insertOrRemoveFromArray(values.performedProcedures, setFieldValue)}
+            />
+            <Checkbox
+              name="performedProcedures"
+              label="Máscara O2"
+              checked={values.performedProcedures.includes(PERFORMED_PROCEDURES.MASK_O2)}
+              value={PERFORMED_PROCEDURES.MASK_O2}
+              handleChange={insertOrRemoveFromArray(values.performedProcedures, setFieldValue)}
+            />
+            <Checkbox
+              name="performedProcedures"
+              label="Catéter O2"
+              checked={values.performedProcedures.includes(PERFORMED_PROCEDURES.CATHETER_02)}
+              value={PERFORMED_PROCEDURES.CATHETER_02}
+              handleChange={insertOrRemoveFromArray(values.performedProcedures, setFieldValue)}
+            />
+            <Checkbox
+              name="performedProcedures"
+              label="Ventilação c/ Ambú"
+              checked={values.performedProcedures.includes(PERFORMED_PROCEDURES.AMBU_VENTILATION)}
+              value={PERFORMED_PROCEDURES.AMBU_VENTILATION}
+              handleChange={insertOrRemoveFromArray(values.performedProcedures, setFieldValue)}
+            />
+            <Checkbox
+              name="performedProcedures"
+              label="Monitoriz. Cardíaca"
+              checked={values.performedProcedures.includes(PERFORMED_PROCEDURES.CARDIAC_MONITORING)}
+              value={PERFORMED_PROCEDURES.CARDIAC_MONITORING}
+              handleChange={insertOrRemoveFromArray(values.performedProcedures, setFieldValue)}
+            />
+            <Checkbox
+              name="performedProcedures"
+              label="Desfibrilação"
+              checked={values.performedProcedures.includes(PERFORMED_PROCEDURES.DEFIBRILLATION)}
+              value={PERFORMED_PROCEDURES.DEFIBRILLATION}
+              handleChange={insertOrRemoveFromArray(values.performedProcedures, setFieldValue)}
+            />
+            <Checkbox
+              name="performedProcedures"
+              label="Marcapasso"
+              checked={values.performedProcedures.includes(
+                PERFORMED_PROCEDURES.CARDIPACEMAKERAC_MONITORING,
+              )}
+              value={PERFORMED_PROCEDURES.CARDIPACEMAKERAC_MONITORING}
+              handleChange={insertOrRemoveFromArray(values.performedProcedures, setFieldValue)}
+            />
+            <Checkbox
+              name="performedProcedures"
+              label="Colar cervical"
+              checked={values.performedProcedures.includes(PERFORMED_PROCEDURES.NECK_BRACE)}
+              value={PERFORMED_PROCEDURES.NECK_BRACE}
+              handleChange={insertOrRemoveFromArray(values.performedProcedures, setFieldValue)}
+            />
+            <Checkbox
+              name="performedProcedures"
+              label="Imobilização"
+              checked={values.performedProcedures.includes(PERFORMED_PROCEDURES.IMMOBILIZATION)}
+              value={PERFORMED_PROCEDURES.IMMOBILIZATION}
+              handleChange={insertOrRemoveFromArray(values.performedProcedures, setFieldValue)}
+            />
+            <Checkbox
+              name="performedProcedures"
+              label="Oxímetro"
+              checked={values.performedProcedures.includes(PERFORMED_PROCEDURES.OXIMETER)}
+              value={PERFORMED_PROCEDURES.OXIMETER}
+              handleChange={insertOrRemoveFromArray(values.performedProcedures, setFieldValue)}
+            />
+            <Checkbox
+              name="performedProcedures"
+              label="Cardioversão"
+              checked={values.performedProcedures.includes(PERFORMED_PROCEDURES.CARDIOVERSION)}
+              value={PERFORMED_PROCEDURES.CARDIOVERSION}
+              handleChange={insertOrRemoveFromArray(values.performedProcedures, setFieldValue)}
+            />
+            <Checkbox
+              name="performedProcedures"
+              label="Curativo"
+              checked={values.performedProcedures.includes(PERFORMED_PROCEDURES.BANDAID)}
+              value={PERFORMED_PROCEDURES.BANDAID}
+              handleChange={insertOrRemoveFromArray(values.performedProcedures, setFieldValue)}
+            />
+            <Checkbox
+              name="performedProcedures"
+              label="Prancha rígida"
+              checked={values.performedProcedures.includes(PERFORMED_PROCEDURES.RIGID_BOARD)}
+              value={PERFORMED_PROCEDURES.RIGID_BOARD}
+              handleChange={insertOrRemoveFromArray(values.performedProcedures, setFieldValue)}
+            />
+            <Checkbox
+              name="performedProcedures"
+              label="Retirada rápida"
+              checked={values.performedProcedures.includes(PERFORMED_PROCEDURES.QUICK_TAKE)}
+              value={PERFORMED_PROCEDURES.QUICK_TAKE}
+              handleChange={insertOrRemoveFromArray(values.performedProcedures, setFieldValue)}
+            />
+            <Checkbox
+              name="performedProcedures"
+              label="Aquecimento"
+              checked={values.performedProcedures.includes(PERFORMED_PROCEDURES.HEATING)}
+              value={PERFORMED_PROCEDURES.HEATING}
+              handleChange={insertOrRemoveFromArray(values.performedProcedures, setFieldValue)}
+            />
+            <Checkbox
+              name="performedProcedures"
+              label="Acesso Venoso"
+              checked={values.performedProcedures.includes(PERFORMED_PROCEDURES.VENOUS_ACCESS)}
+              value={PERFORMED_PROCEDURES.VENOUS_ACCESS}
+              handleChange={insertOrRemoveFromArray(values.performedProcedures, setFieldValue)}
+            />
+            <Checkbox
+              name="performedProcedures"
+              label="KED"
+              checked={values.performedProcedures.includes(PERFORMED_PROCEDURES.KED)}
+              value={PERFORMED_PROCEDURES.KED}
+              handleChange={insertOrRemoveFromArray(values.performedProcedures, setFieldValue)}
+            />
+            <Checkbox
+              name="performedProcedures"
+              label="Controle de Hemorragia"
+              checked={values.performedProcedures.includes(PERFORMED_PROCEDURES.BLEEDING_CONTROL)}
+              value={PERFORMED_PROCEDURES.BLEEDING_CONTROL}
+              handleChange={insertOrRemoveFromArray(values.performedProcedures, setFieldValue)}
+            />
+            <br />
+            <Grid container>
+              <Grid item xs={12} sm={10} />
+              <Grid item xs={12} sm={2}>
+                <Button type="submit" fullWidth variant="outlined" style={{ alignSelf: 'flex-end' }}>
+                  Cadastrar
+                </Button>
+              </Grid>
             </Grid>
           </>
         )}

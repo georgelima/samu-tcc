@@ -11,32 +11,42 @@ export type Props = {
   errors: FormikErrors<{ [k: string]: any }>
   placeholder?: string
   type?: string
+  multiline?: boolean
+  rows?: number
 }
 
-export const TextInput = ({
-  name,
-  label,
-  value,
-  handleChange,
-  helperText,
-  errors,
-  placeholder,
-  type,
-}: Props) => {
-  const hasError = Boolean(errors[name])
+export class TextInput extends React.PureComponent<Props> {
+  render() {
+    const {
+      name,
+      label,
+      value,
+      handleChange,
+      helperText,
+      errors,
+      placeholder,
+      type,
+      multiline,
+      rows,
+    } = this.props
 
-  return (
-    <TextField
-      name={name}
-      variant="outlined"
-      label={label}
-      value={value}
-      onChange={event => handleChange(name, event.target.value)}
-      helperText={hasError ? errors[name] : helperText}
-      fullWidth
-      error={hasError}
-      placeholder={placeholder}
-      type={type}
-    />
-  )
+    const hasError = Boolean(errors[name])
+
+    return (
+      <TextField
+        name={name}
+        variant="outlined"
+        label={label}
+        value={value}
+        onChange={event => handleChange(name, event.target.value)}
+        helperText={hasError ? errors[name] : helperText}
+        fullWidth
+        error={hasError}
+        placeholder={placeholder}
+        type={type}
+        multiline={multiline}
+        rows={rows}
+      />
+    )
+  }
 }

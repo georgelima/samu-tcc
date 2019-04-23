@@ -10,17 +10,25 @@ type Props = {
   handleChange: (name: string, value: string) => void
 }
 
-export const Checkbox = ({ name, label, checked, value, handleChange }: Props) => {
-  return (
-    <FormControlLabel
-      control={
-        <MuiCheckbox
-          checked={checked}
-          onChange={event => handleChange(name, event.target.value)}
-          value={value}
-        />
-      }
-      label={label}
-    />
-  )
+export class Checkbox extends React.Component<Props> {
+  shouldComponentUpdate(nextProps: Props) {
+    return this.props.checked !== nextProps.checked || this.props.value !== nextProps.value
+  }
+
+  render() {
+    const { name, label, checked, value, handleChange } = this.props
+
+    return (
+      <FormControlLabel
+        control={
+          <MuiCheckbox
+            checked={checked}
+            onChange={event => handleChange(name, event.target.value)}
+            value={value}
+          />
+        }
+        label={label}
+      />
+    )
+  }
 }
