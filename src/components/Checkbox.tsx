@@ -8,11 +8,12 @@ type Props = {
   value?: string
   checked: boolean
   handleChange: (name: string, value: string) => void
+  extraData?: any | null
 }
 
 export class Checkbox extends React.Component<Props> {
   shouldComponentUpdate(nextProps: Props) {
-    return this.props.checked !== nextProps.checked || this.props.value !== nextProps.value
+    return this.props.checked !== nextProps.checked || this.props.value !== nextProps.value || this.props.extraData !== nextProps.extraData
   }
 
   render() {

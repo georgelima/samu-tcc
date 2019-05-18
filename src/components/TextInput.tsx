@@ -35,11 +35,11 @@ export class TextInput extends React.PureComponent<Props> {
     return (
       <TextField
         name={name}
-        variant="outlined"
+        variant='outlined'
         label={label}
         value={value}
         onChange={event => handleChange(name, event.target.value)}
-        helperText={hasError ? errors[name] : helperText}
+        helperText={hasError ? `O campo ${label} é obrigatório` : helperText}
         fullWidth
         error={hasError}
         placeholder={placeholder}
