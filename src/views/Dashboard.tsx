@@ -18,9 +18,8 @@ import {
   Bar,
   RadialBarChart,
   RadialBar,
-  Label,
 } from 'recharts'
-
+import GoogleMap from 'google-map-react'
 import { RouteComponentProps } from 'react-router-dom'
 
 import { Layout } from '../components/Layout'
@@ -29,6 +28,7 @@ import { Query } from '../components/Query'
 import { ErrorComponent } from '../components/Error'
 import { NoData } from '../components/NoData'
 import { FullLoader } from '../components/FullLoader'
+import { Tabs } from '../components/Tabs'
 
 import { TRAUMA_MECHANISM } from './InsertMedicalRecord'
 
@@ -36,6 +36,9 @@ import { getAnalytics } from '../services/api'
 
 type State = {
   value: { [key: string]: any }
+  lat: number
+  lng: number
+  coords: Array<{ lat: number; lng: number }>
 }
 
 const COLORS = ['#0088FE', '#F00', '#FFBB28']
@@ -43,6 +46,37 @@ const COLORS = ['#0088FE', '#F00', '#FFBB28']
 export class Dashboard extends PureComponent<RouteComponentProps, State> {
   state = {
     value: {},
+    lat: -2.9035129,
+    lng: -41.768620299999995,
+    coords: [],
+  }
+
+  componentDidMount() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(({ coords }) =>
+        this.setState({
+          lat: coords.latitude,
+          lng: coords.longitude,
+        }),
+      )
+    }
+  }
+
+  initGeocoder = ({ maps }: { maps: any }) => {
+    const geocoder = new maps.Geocoder()
+
+    const coords = []
+
+    // @ts-ignore
+    geocoder.geocode({ address: 'Rua Abdon Santana 73' }, (results, status) => {
+      if (status === 'OK') {
+        if (results[0]) {
+          const lat = results[0].geometry.location.lat()
+          const lng = results[0].geometry.location.lng()
+          coords.push({ lat, lng })
+        }
+      }
+    })
   }
 
   render() {
@@ -57,28 +91,75 @@ export class Dashboard extends PureComponent<RouteComponentProps, State> {
             ) : (
               <Grid container spacing={16}>
                 <Grid item xs={12}>
-                  <Box title='Frequência de Ocorrências' subtitle='Últimos 30 dias'>
-                    {Object.keys(data.frequency).length === 0 ? (
-                      <Typography variant='caption' color='primary'>
-                        Sem ocorrências nos últimos 30 dias
-                      </Typography>
-                    ) : (
-                      <ResponsiveContainer height={200} width='100%'>
-                        <LineChart
-                          data={Object.keys(data.frequency).map(key => ({
-                            name: key,
-                            frequency: data.frequency[key],
-                          }))}
-                        >
-                          <XAxis dataKey='name' />
-                          <YAxis scale='ordinal' />
-                          <Line type='monotone' dataKey='frequency' strokeWidth={2} />
-                          <Tooltip formatter={value => [value, 'Ocorrências']} />
-                        </LineChart>
-                      </ResponsiveContainer>
-                    )}
-                  </Box>
+                  <Tabs
+                    tabs={[
+                      {
+                        label: 'Frequência de Ocorrências',
+                        children: (
+                          <Box title='Frequência de Ocorrências' subtitle='Últimos 30 dias'>
+                            {Object.keys(data.frequency).length === 0 ? (
+                              <Typography variant='caption' color='primary'>
+                                Sem ocorrências nos últimos 30 dias
+                              </Typography>
+                            ) : (
+                              <ResponsiveContainer height={200} width='100%'>
+                                <LineChart
+                                  data={Object.keys(data.frequency).map(key => ({
+                                    name: key,
+                                    frequency: data.frequency[key],
+                                  }))}
+                                >
+                                  <XAxis dataKey='name' />
+                                  <YAxis scale='ordinal' />
+                                  <Line type='monotone' dataKey='frequency' strokeWidth={2} />
+                                  <Tooltip formatter={value => [value, 'Ocorrências']} />
+                                </LineChart>
+                              </ResponsiveContainer>
+                            )}
+                          </Box>
+                        ),
+                      },
+                      {
+                        label: 'Mapa de Calor (Beta)',
+                        children: (
+                          <div style={{ width: '100%', height: '350px' }}>
+                            {
+                              // @ts-ignore
+                              <GoogleMap
+                                bootstrapURLKeys={{
+                                  key: String(process.env.REACT_APP_GOOGLE_MAPS_API_KEY),
+                                }}
+                                defaultZoom={15}
+                                defaultCenter={{
+                                  lat: this.state.lat,
+                                  lng: this.state.lng,
+                                }}
+                                onGoogleApiLoaded={this.initGeocoder}
+                                heatmapLibrary={true}
+                                heatmap={{
+                                  positions: data.lastRecords
+                                    // @ts-ignore
+                                    .map(({ occurrenceLocation }) => {
+                                      if (occurrenceLocation.lat && occurrenceLocation.lng) {
+                                        return {
+                                          lat: occurrenceLocation.lat,
+                                          lng: occurrenceLocation.lng,
+                                        }
+                                      } else {
+                                        return null
+                                      }
+                                    })
+                                    .filter(Boolean),
+                                }}
+                              />
+                            }
+                          </div>
+                        ),
+                      },
+                    ]}
+                  />
                 </Grid>
+
                 <Grid item xs={12} md={3}>
                   <Box title='Frequência de Ocorrências por Sexo' subtitle=''>
                     <ResponsiveContainer height={350} width='100%'>

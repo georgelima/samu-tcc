@@ -362,6 +362,9 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
   handleSubmit = (values: any, { setSubmitting, setStatus }: any) => {
     Service.insertMedicalRecord(values)
       .then(res => {
+        this.setState({
+          showSnackbar: true,
+        })
         setStatus('Ficha de Atendimento registrada!')
         setSubmitting(false)
       })

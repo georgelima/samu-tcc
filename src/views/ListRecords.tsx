@@ -27,7 +27,7 @@ const ROWS = [
   'Motivo da Solicitação',
   'Classificação de Risco',
   'Mecanimso do Trauma',
-  'Remover',
+  'Ações',
 ]
 
 const ROWS_PER_PAGE_OPTIONS = [20, 40, 60]
@@ -186,13 +186,15 @@ export class ListRecords extends React.PureComponent<RouteComponentProps> {
                         </TableCell>
                         <TableCell>{getTraumaMechanism(record.traumaMechanism[0])}</TableCell>
                         <TableCell>
-                          <IconButton onClick={() => this.delete(refetch, record)}>
-                            {this.state.isDeletingId === record._id ? (
-                              <Loader width={18} height={18} />
-                            ) : (
-                              <Delete />
-                            )}
-                          </IconButton>
+                          <Tooltip title='Remover' placement='top-start'>
+                            <IconButton onClick={() => this.delete(refetch, record)}>
+                              {this.state.isDeletingId === record._id ? (
+                                <Loader width={18} height={18} />
+                              ) : (
+                                <Delete />
+                              )}
+                            </IconButton>
+                          </Tooltip>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -212,7 +214,6 @@ export class ListRecords extends React.PureComponent<RouteComponentProps> {
                         <Loader type='Rings' width={25} height={25} />
                       </div>
                     ))}
-                  {console.log(data)}
                   <TablePagination
                     component='div'
                     rowsPerPageOptions={ROWS_PER_PAGE_OPTIONS}

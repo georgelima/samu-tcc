@@ -40,6 +40,7 @@ export class Layout extends React.PureComponent<Props, State> {
                   selected={route === this.props.match.path}
                   button
                   onClick={() => this.props.history.push(route)}
+                  key={`layout-menu-item-${label}`}
                 >
                   <ListItemIcon>{icon}</ListItemIcon>
                   <ListItemText primary={label} />

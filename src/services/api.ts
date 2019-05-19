@@ -1,7 +1,6 @@
 import ky from 'ky'
 
-// const ENDPOINT = 'https://samu-server-george-tcc.georgelima.now.sh/api/v1/medical-records'
-const ENDPOINT = 'http://localhost:8001/api/v1/medical-records'
+const ENDPOINT = String(process.env.REACT_APP_ENDPOINT)
 
 export const getMedicalRecords = ({ offset, limit }: { offset: number; limit: number }) =>
   ky
@@ -22,4 +21,10 @@ export const insertMedicalRecord = (body: any) =>
 
 export const deleteMedicalRecord = (recordId: string) => ky.delete(ENDPOINT + `/${recordId}`).json()
 
-export const getAnalytics = () => ky.get(ENDPOINT + '/analytics').json()
+export const getAnalytics = () =>
+  ky
+    .get(ENDPOINT + '/analytics', {
+      retry: 4,
+      timeout: 20000,
+    })
+    .json()
