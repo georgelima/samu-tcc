@@ -4,6 +4,12 @@
   "builds": [
     { "src": "package.json", "use": "@now/static-build", "config": { "distDir": "build" } }
   ],
+  "build": {
+    "env": {
+      "REACT_APP_ENDPOINT": "https://samu-server-george-tcc.georgelima.now.sh/api/v1/medical-records",
+      "REACT_APP_GOOGLE_MAPS_API_KEY": "@google-maps-api-key"
+    }
+  },
   "routes": [
     {
       "src": "/static/(.*)",

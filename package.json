@@ -35,7 +35,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "now-build": "react-scripts build"
+    "now-build": "react-scripts build",
+    "deploy": "now -e REACT_APP_ENDPOINT=https://samu-server-george-tcc.georgelima.now.sh/api/v1/medical-records -e MONGO_URL=@google-maps-api-key"
   },
   "eslintConfig": {
     "extends": "react-app"
