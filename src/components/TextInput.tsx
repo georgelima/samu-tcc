@@ -8,7 +8,7 @@ export type Props = {
   value: string
   handleChange: (name: string, value: string) => void
   helperText?: string
-  errors: FormikErrors<{ [k: string]: any }>
+  errors?: FormikErrors<{ [k: string]: any }>
   placeholder?: string
   type?: string
   multiline?: boolean
@@ -30,7 +30,7 @@ export class TextInput extends React.PureComponent<Props> {
       rows,
     } = this.props
 
-    const hasError = Boolean(errors[name])
+    const hasError = Boolean(errors && errors[name])
 
     return (
       <TextField

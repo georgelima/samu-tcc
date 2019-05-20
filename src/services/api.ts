@@ -2,9 +2,15 @@ import ky from 'ky'
 
 const ENDPOINT = String(process.env.REACT_APP_ENDPOINT)
 
+const client = ky.extend({
+  prefixUrl: ENDPOINT,
+  retry: 3,
+  timeout: 20000,
+})
+
 export const getMedicalRecords = ({ offset, limit }: { offset: number; limit: number }) =>
-  ky
-    .get(ENDPOINT, {
+  client
+    .get('', {
       searchParams: {
         offset,
         limit,
@@ -13,18 +19,19 @@ export const getMedicalRecords = ({ offset, limit }: { offset: number; limit: nu
     .json()
 
 export const insertMedicalRecord = (body: any) =>
-  ky
-    .post(ENDPOINT, {
+  client
+    .post('', {
       json: body,
     })
     .json()
 
-export const deleteMedicalRecord = (recordId: string) => ky.delete(ENDPOINT + `/${recordId}`).json()
+export const deleteMedicalRecord = (recordId: string) => ky.delete(recordId).json()
 
-export const getAnalytics = () =>
-  ky
-    .get(ENDPOINT + '/analytics', {
-      retry: 4,
-      timeout: 20000,
+export const getAnalytics = () => client.get('analytics').json()
+
+export const generateReport = ({ from, to }: { from: string; to: string }) =>
+  client
+    .post('report', {
+      json: { from, to },
     })
     .json()
