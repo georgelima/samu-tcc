@@ -1,51 +1,20 @@
 {
-  "name": "samu-web",
-  "version": "0.1.0",
+  "name": "samu",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:georgelima/samu-react.git",
+  "author": "George Lima <georgelima11@hotmail.com>",
+  "license": "MIT",
   "private": true,
-  "dependencies": {
-    "@material-ui/core": "^3.9.3",
-    "@material-ui/icons": "^3.0.2",
-    "@react-pdf/renderer": "^1.5.6",
-    "@types/google-map-react": "^0.23.11",
-    "@types/node": "^11.13.4",
-    "@types/puppeteer": "^1.12.4",
-    "@types/react": "^16.8.13",
-    "@types/react-dom": "^16.8.4",
-    "@types/react-router-dom": "^4.3.2",
-    "@types/recharts": "^1.1.16",
-    "@types/yup": "^0.26.12",
-    "date-fns": "^1.30.1",
-    "formik": "^1.5.2",
-    "google-map-react": "^1.1.4",
-    "ky": "^0.10.0",
-    "puppeteer": "^1.15.0",
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6",
-    "react-loader-spinner": "^2.3.0",
-    "react-router-dom": "^5.0.0",
-    "react-scripts": "2.1.8",
-    "react-vis": "^1.11.7",
-    "recharts": "^1.6.0",
-    "ts-node-dev": "^1.0.0-pre.35",
-    "typescript": "^3.4.3",
-    "vanilla-masker": "^1.2.0",
-    "yup": "^0.27.0"
-  },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "now-build": "react-scripts build",
-    "deploy": "now -e REACT_APP_ENDPOINT=https://samu-server-george-tcc.georgelima.now.sh/api/v1/medical-records -e MONGO_URL=@google-maps-api-key"
+    "start:app": "yarn workspace @samu/app start",
+    "deploy:app": "yarn workspace @samu/app deploy",
+    "start:server": "yarn workspace @samu/server dev",
+    "deploy:server": "yarn workspace @samu/server deploy"
   },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
-  ]
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ]
+  }
 }

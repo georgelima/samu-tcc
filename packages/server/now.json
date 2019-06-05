@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "name": "samu-server-george-tcc",
+  "builds": [{ "src": "build/*.js", "use": "@now/node-server" }],
+  "env": {
+    "MONGO_URL": "@mongo-url",
+    "JWT_SECRET": "@jwt-secret",
+    "PORT": "8001",
+    "NODE_ENV": "development",
+    "BASE_API": "/api/v1"
+  },
+  "routes": [{ "src": "/(.*)", "dest": "build/index.js" }]
+}
