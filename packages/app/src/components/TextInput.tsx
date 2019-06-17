@@ -1,5 +1,5 @@
 import React from 'react'
-import { TextField } from '@material-ui/core'
+import { TextField, InputAdornment } from '@material-ui/core'
 import { FormikErrors } from 'formik'
 
 export type Props = {
@@ -13,40 +13,53 @@ export type Props = {
   type?: string
   multiline?: boolean
   rows?: number
+  style?: object
+  startAdornment?: React.ReactElement
+  endAdornment?: React.ReactElement
+  className?: string
 }
 
-export class TextInput extends React.PureComponent<Props> {
-  render() {
-    const {
-      name,
-      label,
-      value,
-      handleChange,
-      helperText,
-      errors,
-      placeholder,
-      type,
-      multiline,
-      rows,
-    } = this.props
+export const TextInput = ({
+  name,
+  label,
+  value,
+  handleChange,
+  helperText,
+  errors,
+  placeholder,
+  type,
+  multiline,
+  rows,
+  style,
+  startAdornment,
+  endAdornment,
+  className,
+}: Props) => {
+  const hasError = Boolean(errors && errors[name])
 
-    const hasError = Boolean(errors && errors[name])
-
-    return (
-      <TextField
-        name={name}
-        variant='outlined'
-        label={label}
-        value={value}
-        onChange={event => handleChange(name, event.target.value)}
-        helperText={hasError ? `O campo ${label} é obrigatório` : helperText}
-        fullWidth
-        error={hasError}
-        placeholder={placeholder}
-        type={type}
-        multiline={multiline}
-        rows={rows}
-      />
-    )
-  }
+  return (
+    <TextField
+      name={name}
+      variant='outlined'
+      label={label}
+      value={value}
+      onChange={event => handleChange(name, event.target.value)}
+      helperText={hasError ? `O campo ${label} é obrigatório` : helperText}
+      fullWidth
+      error={hasError}
+      placeholder={placeholder}
+      type={type}
+      multiline={multiline}
+      rows={rows}
+      style={style}
+      InputProps={{
+        style: {
+          boxSizing: 'border-box',
+        },
+        startAdornment: startAdornment ? <InputAdornment position='start'>{startAdornment}</InputAdornment> : null,
+        endAdornment: endAdornment ? <InputAdornment position='end'>{endAdornment}</InputAdornment> : null,
+      }}
+      className={className}
+    />
+  )
 }

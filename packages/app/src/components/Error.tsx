@@ -1,23 +1,30 @@
 import React from 'react'
+import styled from 'styled-components'
 
 import { Typography } from '@material-ui/core'
 
 import { ServerDownPicture } from './ServerDownPicture'
 
-const style = {
-  height: 'calc(100vh - 50px)',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  flexDirection: 'column',
-}
+const Wrapper = styled.div`
+  height: calc(100vh - 50px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+`
+
+const Error = styled(Typography)`
+  && {
+    margin-top: 30px;
+  }
+`
 
 export const ErrorComponent = ({ message }: { message: string }) => (
   // @ts-ignore
-  <div style={style}>
+  <Wrapper>
     <ServerDownPicture />
-    <Typography variant='h5' color='primary' style={{ marginTop: 30 }}>
+    <Error variant='h5' color='primary'>
       {message}
-    </Typography>
-  </div>
+    </Error>
+  </Wrapper>
 )

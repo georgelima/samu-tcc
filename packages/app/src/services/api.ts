@@ -1,16 +1,35 @@
 import ky from 'ky'
 
-const ENDPOINT = String(process.env.REACT_APP_ENDPOINT)
+import { Auth } from './auth'
 
 const client = ky.extend({
-  prefixUrl: ENDPOINT,
+  prefixUrl: String(process.env.REACT_APP_ENDPOINT),
   retry: 3,
   timeout: 20000,
+  headers: new Headers({
+    Authorization: Auth.getAuthToken(),
+  }),
 })
+
+export const login = ({
+  cpf,
+  password,
+}: {
+  cpf: string
+  password: string
+}): Promise<{ token: string; error: string }> =>
+  client
+    .post('auth/login', {
+      json: {
+        cpf,
+        password,
+      },
+    })
+    .json()
 
 export const getMedicalRecords = ({ offset, limit }: { offset: number; limit: number }) =>
   client
-    .get('', {
+    .get('medical-records', {
       searchParams: {
         offset,
         limit,
@@ -20,18 +39,18 @@ export const getMedicalRecords = ({ offset, limit }: { offset: number; limit: nu
 
 export const insertMedicalRecord = (body: any) =>
   client
-    .post('', {
+    .post('medical-records', {
       json: body,
     })
     .json()
 
-export const deleteMedicalRecord = (recordId: string) => ky.delete(recordId).json()
+export const deleteMedicalRecord = (recordId: string) => ky.delete('medical-records/' + recordId).json()
 
-export const getAnalytics = () => client.get('analytics').json()
+export const getAnalytics = () => client.get('medical-records/analytics').json()
 
 export const generateReport = ({ from, to }: { from: string; to: string }) =>
   client
-    .post('report', {
+    .post('medical-records/report', {
       json: { from, to },
     })
     .json()

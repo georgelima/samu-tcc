@@ -1,57 +1,74 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
+import styled from 'styled-components'
+import { RouteComponentProps } from 'react-router-dom'
 
-import { AppBar, Toolbar, Typography, Button, IconButton } from '@material-ui/core'
+import { AppBar, Toolbar as MuiToolbar, Typography, Button, IconButton } from '@material-ui/core'
 import { Menu as MenuIcon } from '@material-ui/icons'
 import { Link } from 'react-router-dom'
 import { format } from 'date-fns'
 
+import { Auth } from '../services/auth'
+
 type Props = {
   toggleDrawer: Function
+  history: RouteComponentProps['history']
 }
 
 type State = {
   now: Date
 }
 
-export class Header extends React.PureComponent<Props, State> {
-  interval: NodeJS.Timeout | null = null
-  state = {
-    now: new Date(),
-  }
+const Wrapper = styled.div`
+  flex-grow: 1;
+  margin-bottom: 55px;
+`
 
-  componentDidMount() {
-    this.interval = setInterval(() => {
-      this.setState({
-        now: new Date(),
-      })
-    }, 1000)
+const Toolbar = styled(MuiToolbar)`
+  && {
+    justify-content: space-between;
   }
+`
 
-  componentWillUnmount() {
-    if (this.interval) {
-      clearInterval(this.interval)
+export const Header = ({ toggleDrawer, history }: Props) => {
+  const [now, setNow] = useState(new Date())
+
+  useEffect(() => {
+    const interval = setInterval(() => setNow(new Date()), 1000)
+
+    return () => {
+      clearInterval(interval)
     }
-  }
+  })
 
-  render() {
-    return (
-      <div style={{ flexGrow: 1, marginBottom: '55px' }}>
-        <AppBar position='fixed'>
-          <Toolbar variant='dense' style={{ justifyContent: 'space-between' }}>
-            <IconButton color='inherit' aria-label='Menu' onClick={() => this.props.toggleDrawer()}>
-              <MenuIcon />
-            </IconButton>
-            <Link to='/' style={{ textDecoration: 'none', color: 'white', outline: 'none' }}>
-              <Typography variant='h6' color='inherit'>
-                WebSAMU
-              </Typography>
-            </Link>
+  return (
+    <Wrapper>
+      <AppBar position='fixed'>
+        <Toolbar variant='dense'>
+          <IconButton color='inherit' aria-label='Menu' onClick={() => toggleDrawer()}>
+            <MenuIcon />
+          </IconButton>
+          <Link to='/' style={{ textDecoration: 'none', color: 'white', outline: 'none' }}>
+            <Typography variant='h6' color='inherit'>
+              WebSAMU
+            </Typography>
+          </Link>
+          <div>
             <Button color='primary' disabled style={{ color: 'white' }}>
-              {format(this.state.now, 'HH:mm:ss DD/MM/YYYY')}
+              {format(now, 'HH:mm:ss DD/MM/YYYY')}
             </Button>
-          </Toolbar>
-        </AppBar>
-      </div>
-    )
-  }
+            <Button
+              color='primary'
+              style={{ color: 'white' }}
+              onClick={() => {
+                Auth.signout()
+                history.push('/entrar')
+              }}
+            >
+              SAIR
+            </Button>
+          </div>
+        </Toolbar>
+      </AppBar>
+    </Wrapper>
+  )
 }

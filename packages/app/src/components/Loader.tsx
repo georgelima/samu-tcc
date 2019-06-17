@@ -1,4 +1,5 @@
 import React from 'react'
+import styled from 'styled-components'
 
 // @ts-ignore
 import ReactSpinnerLoader from 'react-loader-spinner'
@@ -22,8 +23,14 @@ type Props = {
   width?: number
 }
 
+const Wrapper = styled.div`
+  display: flex;
+  alignitems: center;
+  justifycontent: center;
+`
+
 export const Loader = ({ type = 'Triangle', height = 50, width = 50 }: Props) => (
-  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+  <Wrapper>
     <ReactSpinnerLoader type={type} height={height} width={width} color='#FF0000' />
-  </div>
+  </Wrapper>
 )

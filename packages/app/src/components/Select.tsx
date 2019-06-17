@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import ReactDOM from 'react-dom'
 
 import { FormControl, InputLabel, Select as MaterialSelect, OutlinedInput } from '@material-ui/core'
@@ -11,60 +11,41 @@ type Props = {
   options: { label: string; value: string }[]
 }
 
-type State = {
-  labelWidth: number
-}
+export const Select = ({ name, label, value, handleChange, options }: Props) => {
+  const [labelWidth, setLabelWidth] = useState(0)
+  const inputLabelRef: { current: InputLabel | null } = useRef(null)
 
-export class Select extends PureComponent<Props, State> {
-  inputLabelRef: InputLabel | null
-
-  state = {
-    labelWidth: 0,
-  }
-
-  constructor(props: Props) {
-    super(props)
-    this.inputLabelRef = null
-  }
-
-  componentDidMount() {
-    const label = ReactDOM.findDOMNode(this.inputLabelRef)
+  useEffect(() => {
+    const label = ReactDOM.findDOMNode(inputLabelRef && inputLabelRef.current)
     // @ts-ignore
     const labelWidth = label ? label.offsetWidth : 0
 
-    this.setState({
-      labelWidth,
-    })
-  }
+    setLabelWidth(labelWidth)
+  })
 
-  render() {
-    const { name, label, value, handleChange, options } = this.props
-    const { labelWidth } = this.state
-
-    return (
-      <FormControl variant="outlined" fullWidth>
-        <InputLabel
-          ref={ref => {
-            this.inputLabelRef = ref
-          }}
-        >
-          {label}
-        </InputLabel>
-        <MaterialSelect
-          fullWidth
-          native
-          name={name}
-          value={value}
-          onChange={event => handleChange(name, event.target.value)}
-          input={<OutlinedInput fullWidth name={name} labelWidth={labelWidth} />}
-        >
-          {options.map(({ label: optionLabel, value: optionValue }) => (
-            <option key={`select-${name}-${optionValue}`} value={optionValue}>
-              {optionLabel}
-            </option>
-          ))}
-        </MaterialSelect>
-      </FormControl>
-    )
-  }
+  return (
+    <FormControl variant='outlined' fullWidth>
+      <InputLabel
+        ref={ref => {
+          inputLabelRef.current = ref
+        }}
+      >
+        {label}
+      </InputLabel>
+      <MaterialSelect
+        fullWidth
+        native
+        name={name}
+        value={value}
+        onChange={event => handleChange(name, event.target.value)}
+        input={<OutlinedInput fullWidth name={name} labelWidth={labelWidth} />}
+      >
+        {options.map(({ label: optionLabel, value: optionValue }) => (
+          <option key={`select-${name}-${optionValue}`} value={optionValue}>
+            {optionLabel}
+          </option>
+        ))}
+      </MaterialSelect>
+    </FormControl>
+  )
 }

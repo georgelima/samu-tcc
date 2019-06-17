@@ -369,10 +369,11 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
         setSubmitting(false)
       })
       .catch(err => {
+        console.log(err);
         this.setState({
           showSnackbar: true,
         })
-        setStatus(err.message)
+        setStatus(err.message || "Algo deu errado, por favor tente novamente!")
         setSubmitting(false)
       })
   }

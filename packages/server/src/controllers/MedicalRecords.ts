@@ -204,9 +204,7 @@ export const MedicalRecordsController = {
         .sort('-date')
         .populate('victimData')
         .populate('occurrenceLocation')
-      const last30DaysRecords = records.filter(record =>
-        dateFns.isWithinRange(record.date, thirtyDaysAgo, today),
-      )
+      const last30DaysRecords = records.filter(record => dateFns.isWithinRange(record.date, thirtyDaysAgo, today))
 
       const frequency = R.pipe(
         // @ts-ignore
@@ -221,50 +219,56 @@ export const MedicalRecordsController = {
         })),
       )
 
-      const frequencyByGender = records.reduce(
-        (acc, cur) => ({ ...acc, [cur.victimData.gender]: acc[cur.victimData.gender] + 1 }),
-        { M: 0, F: 0, U: 0 },
-      )
+      const incrementPath: (obj: object, path: string[]) => { [k: string]: any } = (obj, path) => {
+        const lens = R.lensPath(path)
+        const value: number = R.path(path, obj)
 
-      const frequencyByAge = records.reduce(
+        return R.set(lens, (value || 0) + 1, obj)
+      }
+
+      const result = records.reduce(
         (acc, cur) => {
+          let payload = acc
+
+          // @ts-ignore
+          payload = incrementPath(payload, ['frequencyByGender', cur.victimData.gender || 'U'])
+
           if (cur.victimData.age) {
             if (cur.victimData.age <= 14) {
-              return { ...acc, '0 - 14': acc['0 - 14'] + 1 }
+              // @ts-ignore
+              payload = incrementPath(payload, ['frequencyByAge', '0 - 14'])
+            } else if (cur.victimData.age <= 24) {
+              // @ts-ignore
+              payload = incrementPath(payload, ['frequencyByAge', '15 - 24'])
+            } else if (cur.victimData.age <= 50) {
+              // @ts-ignore
+              payload = incrementPath(payload, ['frequencyByAge', '25 - 50'])
+            } else if (cur.victimData.age <= 64) {
+              // @ts-ignore
+              payload = incrementPath(payload, ['frequencyByAge', '51 - 64'])
+            } else {
+              // @ts-ignore
+              payload = incrementPath(payload, ['frequencyByAge', '65 +'])
             }
-            if (cur.victimData.age <= 24) {
-              return { ...acc, '15 - 24': acc['15 - 24'] + 1 }
-            }
-            if (cur.victimData.age <= 50) {
-              return { ...acc, '25 - 50': acc['25 - 50'] + 1 }
-            }
-            if (cur.victimData.age <= 64) {
-              return { ...acc, '51 - 64': acc['51 - 64'] + 1 }
-            }
-            return { ...acc, '65 +': acc['65 +'] + 1 }
           }
 
-          return acc
+          cur.traumaMechanism.forEach(trauma => {
+            // @ts-ignore
+            payload = incrementPath(payload, ['frequencyByTraumaMechanism', trauma])
+          })
+
+          return payload
         },
         {
-          '0 - 14': 0,
-          '15 - 24': 0,
-          '25 - 50': 0,
-          '51 - 64': 0,
-          '65 +': 0,
-        },
-      )
-
-      const frequencyByTraumaMechanism = R.pipe(
-        R.map(R.prop('traumaMechanism')),
-        R.flatten,
-        R.reduce(
-          (acc, cur) => ({
-            ...acc,
-            // @ts-ignore
-            [cur]: acc[cur] + 1,
-          }),
-          {
+          frequencyByGender: { M: 0, F: 0, U: 0 },
+          frequencyByAge: {
+            '0 - 14': 0,
+            '15 - 24': 0,
+            '25 - 50': 0,
+            '51 - 64': 0,
+            '65 +': 0,
+          },
+          frequencyByTraumaMechanism: {
             TRAFFIC_ACCIDENT: 0,
             FAB: 0,
             FALL: 0,
@@ -274,14 +278,14 @@ export const MedicalRecordsController = {
             BURN: 0,
             AGGRESSION: 0,
           },
-        ),
-      )(records)
+        },
+      )
 
       ctx.body = {
         frequency,
-        frequencyByGender,
-        frequencyByAge,
-        frequencyByTraumaMechanism,
+        frequencyByGender: result.frequencyByGender,
+        frequencyByAge: result.frequencyByAge,
+        frequencyByTraumaMechanism: result.frequencyByTraumaMechanism,
         lastRecords: records,
       }
     } catch (err) {
@@ -407,9 +411,7 @@ export const MedicalRecordsController = {
         DEA: keys.some(x => x === PERFORMED_PROCEDURES.DEA),
         cardiacMonitoring: keys.some(x => x === PERFORMED_PROCEDURES.CARDIAC_MONITORING),
         defibrillation: keys.some(x => x === PERFORMED_PROCEDURES.DEFIBRILLATION),
-        cardipacemakeracMonitoring: keys.some(
-          x => x === PERFORMED_PROCEDURES.CARDIPACEMAKERAC_MONITORING,
-        ),
+        cardipacemakeracMonitoring: keys.some(x => x === PERFORMED_PROCEDURES.CARDIPACEMAKERAC_MONITORING),
         neckBrace: keys.some(x => x === PERFORMED_PROCEDURES.NECK_BRACE),
         mmss: keys.some(x => x === PERFORMED_PROCEDURES.MMSS),
         mmii: keys.some(x => x === PERFORMED_PROCEDURES.MMII),

@@ -8,8 +8,10 @@ import * as koaHelmet from 'koa-helmet'
 
 import { errorHandler } from '../middleware/ErrorHandler'
 import { notFoundHandler } from '../middleware/NotFoundHandler'
+import { authHandler } from '../middleware/AuthHandler'
 
-import router from '../routes/MedicalRecord'
+import medicalRecordsRouter from '../routes/MedicalRecord'
+import authRoter from '../routes/Auth'
 
 export const createServer = async () => {
   console.log('[Server] - Starting')
@@ -22,8 +24,11 @@ export const createServer = async () => {
     .use(koaCompress())
     .use(koaCors())
     .use(koaBodyParser())
-    .use(router.routes())
-    .use(router.allowedMethods())
+    .use(authRoter.routes())
+    .use(authRoter.allowedMethods())
+    .use(authHandler())
+    .use(medicalRecordsRouter.routes())
+    .use(medicalRecordsRouter.allowedMethods())
     .use(notFoundHandler())
 
   const server = http.createServer(app.callback())

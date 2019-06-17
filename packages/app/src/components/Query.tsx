@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 
 type State = {
   isLoading: boolean
@@ -8,7 +8,7 @@ type State = {
 }
 
 type Props = {
-  children: (st: State & { refetch: Function }) => React.ReactNode
+  children: (st: State & { refetch: Function }) => React.ReactElement | null
   method: Function
   body?: Object
 }
@@ -20,41 +20,42 @@ const initialState = {
   data: null,
 }
 
-export class Query extends React.PureComponent<Props, State> {
-  state = initialState
+export const Query = ({ body, method, children }: Props) => {
+  const query = useRef((body: any, isRefetch: boolean) => {})
 
-  componentDidMount() {
-    this.query()
-  }
+  const [isLoading, setLoading] = useState(false)
+  const [isRefetching, setRefetching] = useState(false)
+  const [error, setError] = useState(null)
+  const [data, setData] = useState(null)
 
-  query = (body = this.props.body, isRefetch = false) => {
-    this.setState(
-      state => (isRefetch ? { ...state, isRefetching: true } : { ...state, isLoading: true }),
-      () =>
-        this.props
-          .method(body)
-          .then((res: { [key: string]: any }) =>
-            // @ts-ignore
-            this.setState({
-              error: null,
-              ...(isRefetch ? { isRefetching: false } : { isLoading: false }),
-              data: res,
-            }),
-          )
-          .catch((err: Error) =>
-            // @ts-ignore
-            this.setState({
-              error: err,
-              ...(isRefetch ? { isRefetching: false } : { isLoading: false }),
-              data: null,
-            }),
-          ),
-    )
-  }
+  useEffect(() => {
+    query.current = (queryBody = body, isRefetch = false) => {
+      if (isRefetch) {
+        setRefetching(true)
+        setLoading(false)
+      } else {
+        setRefetching(false)
+        setLoading(true)
+      }
+      method(queryBody)
+        .then((res: { [key: string]: any }) => {
+          setError(null)
+          setRefetching(false)
+          setLoading(false)
+          // @ts-ignore
+          setData(res)
+        })
+        .catch((err: Error) => {
+          // @ts-ignore
+          setError(err)
+          setRefetching(false)
+          setLoading(false)
+          setData(null)
+        })
+    }
 
-  refetch = (body: any) => this.query(body, true)
+    query.current(body, false)
+  }, [])
 
-  render() {
-    return this.props.children({ ...this.state, refetch: this.refetch })
-  }
+  return children({ isLoading, isRefetching, error, data, refetch: (body: any) => query.current(body, true) })
 }

@@ -2,6 +2,7 @@ import 'reflect-metadata'
 import 'array-flat-polyfill'
 
 import * as dotenv from 'dotenv'
+import { startup } from './config/Startup'
 
 dotenv.config()
 
@@ -16,4 +17,6 @@ import * as Database from './config/Database'
     const env = process.env.NODE_ENV
     console.log('[Server] - Listening on', process.env.PORT, 'in', env, 'mode')
   })
+
+  await startup()
 })()

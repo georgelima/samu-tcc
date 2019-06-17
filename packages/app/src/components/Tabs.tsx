@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 import { Paper, Tabs as MuiTabs, Tab } from '@material-ui/core'
 
@@ -6,35 +6,18 @@ type Props = {
   tabs: Array<{ label: string; children: React.ReactNode }>
 }
 
-type State = {
-  index: number
-}
+export const Tabs = ({ tabs }: Props) => {
+  const [value, setValue] = useState(0)
+  const child = tabs[value]
 
-export class Tabs extends React.PureComponent<Props> {
-  state = {
-    value: 0,
-  }
-
-  handleChange = (value: number) => {
-    this.setState({ value })
-  }
-
-  renderChildren = () => {
-    const child = this.props.tabs[this.state.value]
-
-    return child ? child.children : null
-  }
-
-  render() {
-    return (
-      <Paper>
-        <MuiTabs value={this.state.value} onChange={(event, value) => this.handleChange(value)}>
-          {this.props.tabs.map(({ label }) => (
-            <Tab label={label} />
-          ))}
-        </MuiTabs>
-        {this.renderChildren()}
-      </Paper>
-    )
-  }
+  return (
+    <Paper>
+      <MuiTabs value={value} onChange={(event, value) => setValue(value)}>
+        {tabs.map(({ label }) => (
+          <Tab label={label} />
+        ))}
+      </MuiTabs>
+      {child ? child.children : null}
+    </Paper>
+  )
 }
