@@ -10,4 +10,6 @@ RUN cd packages/app && yarn build
 
 RUN yarn global add serve
 
-CMD ["serve", "-s", "-l", "$PORT", "./packages/app/build"]
+CMD serve -s -l $PORT ./packages/app/build
+
+# CMD ["serve", "-s", "-l", "$PORT", "./packages/app/build"]
