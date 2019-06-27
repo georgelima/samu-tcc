@@ -1,12 +1,14 @@
 {
   "compilerOptions": {
     "lib": ["dom", "esnext.array", "es5", "es6"],
-    "target": "ES2016",
+    "target": "es5",
     "module": "commonjs",
     "moduleResolution": "node",
     "outDir": "./build",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "sourceMap": false
+    "sourceMap": false,
+    "allowJs": true,
+    "skipLibCheck": true
   }
 }
