@@ -6,7 +6,6 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - run: docker build -f docker/Dockerfile.app -t georgelima/app-samu .
       - run: docker login --username=_ --password=${HEROKU_AUTH_TOKEN} registry.heroku.com
       - run: docker build -f docker/Dockerfile.app -t registry.heroku.com/samu-tcc-client/web .
       - run: docker push registry.heroku.com/samu-tcc-client/web
