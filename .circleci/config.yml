@@ -12,7 +12,7 @@ jobs:
       - run: docker push registry.heroku.com/samu-tcc-client/web
   build-deploy-server:
     docker:
-      - image: circleci/buildpack-deps:stretch
+      - image: circleci/ruby:2.4.2-jessie-node
     steps:
       - checkout
       - setup_remote_docker
