@@ -6,9 +6,9 @@ COPY package.json .
 COPY . .
 COPY .env packages/server/.env
 
-RUN yarn global add forever typescript@3.4.2
+RUN yarn global add typescript@3.4.2
 
 RUN yarn install
 RUN cd packages/server && sh -c tsc
 
-CMD forever start ./packages/server/build/index.js
+CMD ["node", "./packages/server/build/index.js"]
