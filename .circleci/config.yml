@@ -6,11 +6,23 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
+      - run: echo ${ENV_FILE_CLIENT} | base64 --decode > .env
       - run: docker login --username=_ --password=${HEROKU_AUTH_TOKEN} registry.heroku.com
       - run: docker build -f docker/Dockerfile.app -t registry.heroku.com/samu-tcc-client/web .
       - run: docker push registry.heroku.com/samu-tcc-client/web
+  build-deploy-server:
+    docker:
+      - image: circleci/buildpack-deps:stretch
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: echo ${ENV_FILE_SERVER} | base64 --decode > .env
+      - run: docker login --username=_ --password=${HEROKU_AUTH_TOKEN} registry.heroku.com
+      - run: docker build -f docker/Dockerfile.server -t registry.heroku.com/samu-tcc-server/web .
+      - run: docker push registry.heroku.com/samu-tcc-server/web
 workflows:
   version: 2
   build_and_test:
     jobs:
       - build-deploy-client
+      - build-deploy-server

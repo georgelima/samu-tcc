@@ -13,7 +13,7 @@ import * as Database from './config/Database'
 
   const app = await createServer()
 
-  app.listen(process.env.PORT, () => {
+  app.listen(process.env.PORT || 8001, () => {
     const env = process.env.NODE_ENV
     console.log('[Server] - Listening on', process.env.PORT, 'in', env, 'mode')
   })
