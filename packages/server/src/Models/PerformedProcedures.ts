@@ -66,7 +66,4 @@ const PerformedProceduresSchema = new Schema({
   ventilation: Boolean,
 })
 
-export const PerformedProcedures = model<IPerformedProcedures>(
-  'PerfomedProcedures',
-  PerformedProceduresSchema,
-)
+export const PerformedProcedures = model<IPerformedProcedures>('PerformedProcedures', PerformedProceduresSchema)

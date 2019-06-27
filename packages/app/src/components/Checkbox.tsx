@@ -13,7 +13,11 @@ type Props = {
 
 export class Checkbox extends React.Component<Props> {
   shouldComponentUpdate(nextProps: Props) {
-    return this.props.checked !== nextProps.checked || this.props.value !== nextProps.value || this.props.extraData !== nextProps.extraData
+    return (
+      this.props.checked !== nextProps.checked ||
+      this.props.value !== nextProps.value ||
+      this.props.extraData !== nextProps.extraData
+    )
   }
 
   render() {
@@ -22,11 +26,7 @@ export class Checkbox extends React.Component<Props> {
     return (
       <FormControlLabel
         control={
-          <MuiCheckbox
-            checked={checked}
-            onChange={event => handleChange(name, event.target.value)}
-            value={value}
-          />
+          <MuiCheckbox checked={checked} onChange={event => handleChange(name, event.target.value)} value={value} />
         }
         label={label}
       />

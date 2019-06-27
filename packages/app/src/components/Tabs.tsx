@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, memo } from 'react'
 
 import { Paper, Tabs as MuiTabs, Tab } from '@material-ui/core'
 
@@ -6,7 +6,7 @@ type Props = {
   tabs: Array<{ label: string; children: React.ReactNode }>
 }
 
-export const Tabs = ({ tabs }: Props) => {
+export const Tabs = memo(({ tabs }: Props) => {
   const [value, setValue] = useState(0)
   const child = tabs[value]
 
@@ -20,4 +20,4 @@ export const Tabs = ({ tabs }: Props) => {
       {child ? child.children : null}
     </Paper>
   )
-}
+})

@@ -1,6 +1,8 @@
 import React from 'react'
 import { TextField, InputAdornment } from '@material-ui/core'
 import { FormikErrors } from 'formik'
+// @ts-ignore
+import VMask from 'vanilla-masker'
 
 export type Props = {
   name: string
@@ -17,9 +19,88 @@ export type Props = {
   startAdornment?: React.ReactElement
   endAdornment?: React.ReactElement
   className?: string
+  mask?: string
 }
 
-export const TextInput = ({
+type State = {
+  value: string
+}
+
+export class TextInput extends React.Component<Props, State> {
+  state = {
+    value: '',
+  }
+
+  constructor(props: Props) {
+    super(props)
+
+    this.state = {
+      value: props.value,
+    }
+  }
+
+  shouldComponentUpdate(nextProps: Props, nextState: State) {
+    return (
+      this.props.value !== nextProps.value ||
+      (this.props.errors || []).length !== (nextProps.errors || []).length ||
+      this.state.value !== nextState.value
+    )
+  }
+
+  render() {
+    const {
+      name,
+      label,
+      handleChange,
+      helperText,
+      errors,
+      placeholder,
+      type,
+      multiline,
+      rows,
+      style,
+      startAdornment,
+      endAdornment,
+      className,
+      mask,
+    } = this.props
+
+    const { value } = this.state
+
+    const hasError = Boolean(errors && errors[name])
+
+    return (
+      <TextField
+        name={name}
+        variant='outlined'
+        label={label}
+        value={value}
+        onChange={event =>
+          this.setState({ value: mask ? VMask.toPattern(event.target.value, mask) : event.target.value })
+        }
+        onBlur={() => handleChange(name, value)}
+        helperText={hasError ? `O campo ${label} é obrigatório` : helperText}
+        fullWidth
+        error={hasError}
+        placeholder={placeholder}
+        type={type}
+        multiline={multiline}
+        rows={rows}
+        style={style}
+        InputProps={{
+          style: {
+            boxSizing: 'border-box',
+          },
+          startAdornment: startAdornment ? <InputAdornment position='start'>{startAdornment}</InputAdornment> : null,
+          endAdornment: endAdornment ? <InputAdornment position='end'>{endAdornment}</InputAdornment> : null,
+        }}
+        className={className}
+      />
+    )
+  }
+}
+
+export const TextInput1 = ({
   name,
   label,
   value,

@@ -8,11 +8,11 @@ type Props = {
   handleChange: (name: string, value: boolean) => void
 }
 
-export const Switch = ({ name, label, value, handleChange }: Props) => {
+export const Switch = React.memo(({ name, label, value, handleChange }: Props) => {
   return (
     <FormControlLabel
       label={label}
       control={<MuiSwitch checked={value} onChange={evt => handleChange(name, !value)} />}
     />
   )
-}
+})

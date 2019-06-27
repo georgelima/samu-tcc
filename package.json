@@ -9,7 +9,9 @@
   "scripts": {
     "start:app": "yarn workspace @samu/app start",
     "deploy:app": "yarn workspace @samu/app deploy",
+    "prod:app": "yarn workspace @samu/app start",
     "start:server": "yarn workspace @samu/server dev",
+    "prod:server": "yarn workspace @samu/server prod",
     "deploy:server": "yarn workspace @samu/server deploy"
   },
   "workspaces": {

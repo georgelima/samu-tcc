@@ -20,7 +20,6 @@ const Error = styled(Typography)`
 `
 
 export const ErrorComponent = ({ message }: { message: string }) => (
-  // @ts-ignore
   <Wrapper>
     <ServerDownPicture />
     <Error variant='h5' color='primary'>

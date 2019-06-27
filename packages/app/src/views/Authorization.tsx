@@ -8,7 +8,6 @@ import * as Yup from 'yup'
 import { sha256 } from 'js-sha256'
 
 import { TextInput } from '../components/TextInput'
-import { MaskTextInput } from '../components/MaskTextInput'
 
 import { Auth } from '../services/auth'
 import * as Service from '../services/api'
@@ -54,12 +53,6 @@ const Field = styled(TextInput)`
   }
 `
 
-const MaskField = styled(MaskTextInput)`
-  && {
-    margin-bottom: 10px;
-  }
-`
-
 export const Authorization = (props: RouteComponentProps) => {
   const [showPassword, setShowPassword] = useState(false)
 
@@ -85,7 +78,7 @@ export const Authorization = (props: RouteComponentProps) => {
             }
 
             Auth.authenticate(res.token)
-            props.history.push('/')
+            location.reload()
           })
           .catch(err => {
             console.log(err)
@@ -97,9 +90,11 @@ export const Authorization = (props: RouteComponentProps) => {
       {({ values, setFieldValue, handleSubmit, isSubmitting, errors, status }) => (
         <Wrapper>
           <Paper>
+            Credenciais para teste <br />
+            cpf: 123.456.789-00 password: 123456
             <Heading variant='h4'>WebSAMU</Heading>
             <Card>
-              <MaskField
+              <Field
                 mask='999.999.999-99'
                 name='cpf'
                 handleChange={setFieldValue}

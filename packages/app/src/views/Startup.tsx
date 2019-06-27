@@ -54,7 +54,7 @@ export const Startup = (props: RouteComponentProps) => {
     <Layout {...props}>
       <Grid container spacing={16}>
         {SECTIONS.map(({ label, route, icon }) => (
-          <Grid item sm={12} md={4}>
+          <Grid item key={`help-desk-${label}-${route}`} sm={12} md={4}>
             <Card onClick={() => history.push(route)}>
               <Icon>{icon}</Icon>
               <Label>{label}</Label>

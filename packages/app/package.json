@@ -13,6 +13,8 @@
     "@types/react-dom": "^16.8.4",
     "@types/react-router-dom": "^4.3.2",
     "@types/recharts": "^1.1.16",
+    "@types/js-cookie": "^2.2.2",
+    "@types/styled-components": "^4.1.16",
     "@types/yup": "^0.26.12",
     "date-fns": "^1.30.1",
     "formik": "^1.5.2",
@@ -20,6 +22,7 @@
     "js-cookie": "^2.2.0",
     "js-sha256": "^0.9.0",
     "ky": "^0.10.0",
+    "material-table": "^1.39.2",
     "puppeteer": "^1.15.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
@@ -39,8 +42,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "now-build": "react-scripts build",
-    "deploy": "now -e REACT_APP_ENDPOINT=https://samu-server-george-tcc.georgelima.now.sh/api/v1/medical-records -e MONGO_URL=@google-maps-api-key"
+    "deploy": "now -e REACT_APP_ENDPOINT=https://samu-server-george-tcc.georgelima.now.sh/api/v1/ -e REACT_APP_GOOGLE_MAPS_API_KEY=@google-maps-api-key",
+    "now-build": "react-scripts build"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -50,9 +53,5 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ],
-  "devDependencies": {
-    "@types/js-cookie": "^2.2.2",
-    "@types/styled-components": "^4.1.16"
-  }
+  ]
 }

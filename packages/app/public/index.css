@@ -455,3 +455,7 @@ svg.recharts-surface tspan,
   color: black !important;
   font-family: Roboto, sans-serif;
 }
+
+.MuiTableCell-root {
+  padding: 0 40px 0 16px !important;
+}

@@ -5,7 +5,7 @@ import { Grid, Button, Snackbar } from '@material-ui/core'
 import * as dateFns from 'date-fns'
 
 import { Layout } from '../components/Layout'
-import { MaskTextInput } from '../components/MaskTextInput'
+import { TextInput } from '../components/TextInput'
 import { Select } from '../components/Select'
 
 import { generateReport } from '../services/api'
@@ -198,7 +198,7 @@ export const Reports = (props: RouteComponentProps) => {
           {dateInterval !== 'all' && (
             <>
               <Grid item xs={12} sm={3}>
-                <MaskTextInput
+                <TextInput
                   name='from'
                   label='Data Início'
                   placeholder='DD/MM/YYYY'
@@ -208,7 +208,7 @@ export const Reports = (props: RouteComponentProps) => {
                 />
               </Grid>
               <Grid item xs={12} sm={3}>
-                <MaskTextInput
+                <TextInput
                   name='to'
                   label='Data Fim'
                   placeholder='DD/MM/YYYY'

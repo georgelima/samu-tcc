@@ -196,15 +196,32 @@ export const MedicalRecordsController = {
     }
   },
   async getAnalytics(ctx: Context) {
-    try {
-      const today = new Date()
-      const thirtyDaysAgo = dateFns.subDays(today, 30)
+    const { period } = ctx.request.query
 
-      const records = await MedicalRecord.find()
-        .sort('-date')
+    const today = dateFns.startOfDay(new Date())
+
+    const getStartDate = () => {
+      switch (period) {
+        case 'LAST_7_DAYS':
+          return dateFns.subDays(today, 7)
+        case 'LAST_30_DAYS':
+          return dateFns.subMonths(today, 1)
+        case 'LAST_6_MONTHS':
+          return dateFns.subMonths(today, 6)
+        case 'LAST_12_MONTHS':
+          return dateFns.subMonths(today, 12)
+      }
+    }
+
+    try {
+      const records = await MedicalRecord.find({
+        date: {
+          $gte: getStartDate(),
+        },
+      })
+        .sort('date')
         .populate('victimData')
         .populate('occurrenceLocation')
-      const last30DaysRecords = records.filter(record => dateFns.isWithinRange(record.date, thirtyDaysAgo, today))
 
       const frequency = R.pipe(
         // @ts-ignore
@@ -213,7 +230,7 @@ export const MedicalRecordsController = {
         R.map(R.length),
       )(
         // @ts-ignore
-        last30DaysRecords.map(record => ({
+        records.map(record => ({
           ...record.toObject(),
           stringDate: dateFns.format(record.date, 'DD/MM/YYYY'),
         })),
@@ -296,13 +313,18 @@ export const MedicalRecordsController = {
   async find(ctx: Context) {
     const { offset, limit } = ctx.request.query
 
-    ctx.body = {
-      records: await MedicalRecord.find()
-        .limit(Number(limit) || 0)
-        .skip(Number(offset) || 0)
-        .sort('-date')
-        .populate('victimData'),
-      totalCount: await MedicalRecord.countDocuments(),
+    try {
+      ctx.body = {
+        records: await MedicalRecord.find()
+          .limit(Number(limit) || 0)
+          .skip(Number(offset) || 0)
+          .sort('date')
+          .populate('victimData occurrenceLocation performedProcedures'),
+        totalCount: await MedicalRecord.countDocuments(),
+      }
+    } catch (err) {
+      console.log(err)
+      ctx.status = 500
     }
   },
   async findById(ctx: Context) {
@@ -342,6 +364,7 @@ export const MedicalRecordsController = {
         physicalExaminationFindingsExtremities,
         date,
         time,
+        performedProcedures: procedures,
         ...payload
       } = body
 
@@ -398,33 +421,31 @@ export const MedicalRecordsController = {
         extremities: physicalExaminationFindingsExtremities,
       })
 
-      const keys = Object.keys(PERFORMED_PROCEDURES)
-
       const performedProcedures = new PerformedProcedures({
-        guedel: keys.some(x => x === PERFORMED_PROCEDURES.GUEDEL),
-        aspiration: keys.some(x => x === PERFORMED_PROCEDURES.ASPIRATION),
-        iot: keys.some(x => x === PERFORMED_PROCEDURES.IOT),
-        vm: keys.some(x => x === PERFORMED_PROCEDURES.VM),
-        maskO2: keys.some(x => x === PERFORMED_PROCEDURES.MASK_O2),
-        catheterO2: keys.some(x => x === PERFORMED_PROCEDURES.CATHETER_02),
-        chestCompression: keys.some(x => x === PERFORMED_PROCEDURES.CHEST_COMPRESSION),
-        DEA: keys.some(x => x === PERFORMED_PROCEDURES.DEA),
-        cardiacMonitoring: keys.some(x => x === PERFORMED_PROCEDURES.CARDIAC_MONITORING),
-        defibrillation: keys.some(x => x === PERFORMED_PROCEDURES.DEFIBRILLATION),
-        cardipacemakeracMonitoring: keys.some(x => x === PERFORMED_PROCEDURES.CARDIPACEMAKERAC_MONITORING),
-        neckBrace: keys.some(x => x === PERFORMED_PROCEDURES.NECK_BRACE),
-        mmss: keys.some(x => x === PERFORMED_PROCEDURES.MMSS),
-        mmii: keys.some(x => x === PERFORMED_PROCEDURES.MMII),
-        oximeter: keys.some(x => x === PERFORMED_PROCEDURES.OXIMETER),
-        cardioversion: keys.some(x => x === PERFORMED_PROCEDURES.CARDIOVERSION),
-        bandAid: keys.some(x => x === PERFORMED_PROCEDURES.BANDAID),
-        rigidBoard: keys.some(x => x === PERFORMED_PROCEDURES.RIGID_BOARD),
-        quickTake: keys.some(x => x === PERFORMED_PROCEDURES.QUICK_TAKE),
-        heating: keys.some(x => x === PERFORMED_PROCEDURES.HEATING),
-        venousAccess: keys.some(x => x === PERFORMED_PROCEDURES.VENOUS_ACCESS),
-        bleedingControl: keys.some(x => x === PERFORMED_PROCEDURES.BLEEDING_CONTROL),
-        KED: keys.some(x => x === PERFORMED_PROCEDURES.KED),
-        ventilation: keys.some(x => x === PERFORMED_PROCEDURES.AMBU_VENTILATION),
+        guedel: procedures.some(x => x === PERFORMED_PROCEDURES.GUEDEL),
+        aspiration: procedures.some(x => x === PERFORMED_PROCEDURES.ASPIRATION),
+        iot: procedures.some(x => x === PERFORMED_PROCEDURES.IOT),
+        vm: procedures.some(x => x === PERFORMED_PROCEDURES.VM),
+        maskO2: procedures.some(x => x === PERFORMED_PROCEDURES.MASK_O2),
+        catheterO2: procedures.some(x => x === PERFORMED_PROCEDURES.CATHETER_02),
+        chestCompression: procedures.some(x => x === PERFORMED_PROCEDURES.CHEST_COMPRESSION),
+        DEA: procedures.some(x => x === PERFORMED_PROCEDURES.DEA),
+        cardiacMonitoring: procedures.some(x => x === PERFORMED_PROCEDURES.CARDIAC_MONITORING),
+        defibrillation: procedures.some(x => x === PERFORMED_PROCEDURES.DEFIBRILLATION),
+        cardipacemakeracMonitoring: procedures.some(x => x === PERFORMED_PROCEDURES.CARDIPACEMAKERAC_MONITORING),
+        neckBrace: procedures.some(x => x === PERFORMED_PROCEDURES.NECK_BRACE),
+        mmss: procedures.some(x => x === PERFORMED_PROCEDURES.MMSS),
+        mmii: procedures.some(x => x === PERFORMED_PROCEDURES.MMII),
+        oximeter: procedures.some(x => x === PERFORMED_PROCEDURES.OXIMETER),
+        cardioversion: procedures.some(x => x === PERFORMED_PROCEDURES.CARDIOVERSION),
+        bandAid: procedures.some(x => x === PERFORMED_PROCEDURES.BANDAID),
+        rigidBoard: procedures.some(x => x === PERFORMED_PROCEDURES.RIGID_BOARD),
+        quickTake: procedures.some(x => x === PERFORMED_PROCEDURES.QUICK_TAKE),
+        heating: procedures.some(x => x === PERFORMED_PROCEDURES.HEATING),
+        venousAccess: procedures.some(x => x === PERFORMED_PROCEDURES.VENOUS_ACCESS),
+        bleedingControl: procedures.some(x => x === PERFORMED_PROCEDURES.BLEEDING_CONTROL),
+        KED: procedures.some(x => x === PERFORMED_PROCEDURES.KED),
+        ventilation: procedures.some(x => x === PERFORMED_PROCEDURES.AMBU_VENTILATION),
       })
 
       const medicalRecord = new MedicalRecord({

@@ -21,14 +21,14 @@ const ROUTES = [
   { route: '/', label: 'Início', icon: <Home /> },
   { route: '/novo', label: 'Novo Atendimento', icon: <Add /> },
   { route: '/consulta', label: 'Listar Atendimentos', icon: <ListAlt /> },
-  { route: '/relatorios', label: 'Relatórios', icon: <PieChart /> },
+  { route: '/relatorio', label: 'Relatórios', icon: <PieChart /> },
 ]
 
 const Wrapper = styled.div`
   width: 250px;
 `
 
-export const Layout = ({ history, match, children }: Props) => {
+export const Layout = React.memo(({ history, match, children }: Props) => {
   const [showDrawer, setShowDrawer] = useState(false)
 
   return (
@@ -54,4 +54,4 @@ export const Layout = ({ history, match, children }: Props) => {
       {children}
     </>
   )
-}
+})

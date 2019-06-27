@@ -27,12 +27,24 @@ export const login = ({
     })
     .json()
 
-export const getMedicalRecords = ({ offset, limit }: { offset: number; limit: number }) =>
+export const getMedicalRecords = ({
+  offset,
+  limit,
+  orderDirection,
+  orderBy,
+}: {
+  offset: number
+  limit: number
+  orderDirection: string
+  orderBy: string
+}) =>
   client
     .get('medical-records', {
       searchParams: {
         offset,
         limit,
+        orderDirection,
+        orderBy,
       },
     })
     .json()
@@ -46,7 +58,14 @@ export const insertMedicalRecord = (body: any) =>
 
 export const deleteMedicalRecord = (recordId: string) => ky.delete('medical-records/' + recordId).json()
 
-export const getAnalytics = () => client.get('medical-records/analytics').json()
+export const getAnalytics = ({ period }: { period: string }) =>
+  client
+    .get('medical-records/analytics', {
+      searchParams: {
+        period,
+      },
+    })
+    .json()
 
 export const generateReport = ({ from, to }: { from: string; to: string }) =>
   client

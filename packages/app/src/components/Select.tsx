@@ -9,9 +9,10 @@ type Props = {
   value: string
   handleChange: (name: string, value: string) => void
   options: { label: string; value: string }[]
+  disabled?: boolean
 }
 
-export const Select = ({ name, label, value, handleChange, options }: Props) => {
+export const Select = React.memo(({ name, label, value, handleChange, options, disabled }: Props) => {
   const [labelWidth, setLabelWidth] = useState(0)
   const inputLabelRef: { current: InputLabel | null } = useRef(null)
 
@@ -21,7 +22,7 @@ export const Select = ({ name, label, value, handleChange, options }: Props) => 
     const labelWidth = label ? label.offsetWidth : 0
 
     setLabelWidth(labelWidth)
-  })
+  }, [])
 
   return (
     <FormControl variant='outlined' fullWidth>
@@ -33,10 +34,12 @@ export const Select = ({ name, label, value, handleChange, options }: Props) => 
         {label}
       </InputLabel>
       <MaterialSelect
+        disabled={disabled}
         fullWidth
         native
         name={name}
         value={value}
+        defaultValue={value}
         onChange={event => handleChange(name, event.target.value)}
         input={<OutlinedInput fullWidth name={name} labelWidth={labelWidth} />}
       >
@@ -48,4 +51,4 @@ export const Select = ({ name, label, value, handleChange, options }: Props) => 
       </MaterialSelect>
     </FormControl>
   )
-}
+})

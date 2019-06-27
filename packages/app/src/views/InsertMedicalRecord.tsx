@@ -1,15 +1,5 @@
 import React from 'react'
-import {
-  Grid,
-  Typography,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Button,
-  Snackbar,
-} from '@material-ui/core'
+import { Grid, Typography, Table, TableBody, TableCell, TableHead, TableRow, Button, Snackbar } from '@material-ui/core'
 import { Formik } from 'formik'
 import dateFns from 'date-fns'
 import * as yup from 'yup'
@@ -18,7 +8,6 @@ import { RouteComponentProps } from 'react-router-dom'
 import { Layout } from '../components/Layout'
 import { TextInput } from '../components/TextInput'
 import { Select } from '../components/Select'
-import { MaskTextInput } from '../components/MaskTextInput'
 import { Checkbox } from '../components/Checkbox'
 import { Switch } from '../components/Switch'
 
@@ -304,10 +293,7 @@ const PERFORMED_PROCEDURES = {
 
 type setFieldValue = (name: string, value: null | string | string[] | boolean) => void
 
-const insertOrRemoveFromArray = (array: string[], setFieldValue: setFieldValue) => (
-  name: string,
-  value: string,
-) => {
+const insertOrRemoveFromArray = (array: string[], setFieldValue: setFieldValue) => (name: string, value: string) => {
   if (array.includes(value)) {
     setFieldValue(name, array.filter(x => x !== value))
   } else {
@@ -315,10 +301,7 @@ const insertOrRemoveFromArray = (array: string[], setFieldValue: setFieldValue) 
   }
 }
 
-const checkOrUncheck = (oldValue: string | null, setFieldValue: setFieldValue) => (
-  name: string,
-  value: string,
-) => {
+const checkOrUncheck = (oldValue: string | null, setFieldValue: setFieldValue) => (name: string, value: string) => {
   if (oldValue === value) {
     setFieldValue(name, null)
   } else {
@@ -354,7 +337,121 @@ type State = {
   showSnackbar: boolean
 }
 
-export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps, State> {
+const validationSchema = yup.object().shape({
+  vtr: yup.string().required(),
+  riskRating: yup.string().required(),
+  occurrenceNumber: yup.string().required(),
+  date: yup.string().required(),
+  time: yup.string().required(),
+  doctor: yup.string(),
+  requestReason: yup.string().required(),
+  requestReasonText: yup.string(),
+  location: yup.string().required(),
+  locationText: yup.string(),
+  address: yup.string().required(),
+  addressNumber: yup.string().required(),
+  neighborhood: yup.string().required(),
+  city: yup.string().required(),
+  locationSituation: yup.array().of(yup.string().required()),
+  victimSituation: yup.string(),
+  victimSituationText: yup.string(),
+  complications: yup.string(),
+  numberOfVictims: yup.number(),
+  otherServices: yup.bool().required(),
+  otherServicesText: yup.string(),
+  supportRequest: yup.array().of(yup.string().required()),
+  supportRequestText: yup.string(),
+  victimName: yup.string(),
+  victimDoc: yup.string(),
+  victimAge: yup.string(),
+  victimGender: yup.string(),
+  victimAddress: yup.string(),
+  victimAddressNeighborhood: yup.string(),
+  victimAddressCity: yup.string(),
+  victimAddressPhone: yup.string(),
+  companion: yup.string(),
+  companionDoc: yup.string(),
+  companionProximityLevel: yup.string(),
+  companionPhone: yup.string(),
+  initialPA: yup.string(),
+  currentPA: yup.string(),
+  initialFC: yup.string(),
+  currentFC: yup.string(),
+  initialFR: yup.string(),
+  currentFR: yup.string(),
+  initialDEXTRO: yup.string(),
+  currentDEXTRO: yup.string(),
+  initialSatO2: yup.string(),
+  currentSatO2: yup.string(),
+  initialTCelsius: yup.string(),
+  currentTCelsius: yup.string(),
+  allergy: yup.string(),
+  allergyText: yup.string(),
+  medicinesInUse: yup.string(),
+  medicinesInUseText: yup.string(),
+  personalBackground: yup.array().of(yup.string().required()),
+  personalBackgroundText: yup.string(),
+  glasgowOcularOpeningAdult: yup.string(),
+  glasgowVerbalResponseAdult: yup.string(),
+  glasgowMotorResponseAdult: yup.string(),
+  glasgowOcularOpeningChild: yup.string(),
+  glasgowVerbalResponseChild: yup.string(),
+  glasgowMotorResponseChild: yup.string(),
+  traumaMechanism: yup.string().required(),
+  fallHeight: yup.string(),
+  responsive: yup.bool(),
+  pulse: yup.string(),
+  accidentType: yup.array().of(yup.string().required()),
+  victimPostionInVehicle: yup.string(),
+  safetyEquipment: yup.string(),
+  victimLocation: yup.string(),
+  wandering: yup.bool(),
+  victimVehicle: yup.string(),
+  victimVehicleText: yup.string(),
+  otherInvolved: yup.string(),
+  airways: yup.string(),
+  secretionText: yup.string(),
+  breath: yup.array().of(yup.string().required()),
+  pulmonaryAuscultation: yup.array().of(yup.string().required()),
+  findings: yup.array().of(yup.string().required()),
+  findingsText: yup.string(),
+  skin: yup.array().of(yup.string().required()),
+  infusion: yup.string(),
+  heartAuscultation: yup.array().of(yup.string().required()),
+  neurologicalExamination: yup.array().of(yup.string().required()),
+  aphasia: yup.bool(),
+  otorrhagia: yup.array().of(yup.string().required()),
+  racoonEyes: yup.array().of(yup.string().required()),
+  battle: yup.array().of(yup.string().required()),
+  motorDeficit: yup.array().of(yup.string().required()),
+  stiffNeck: yup.bool(),
+  pupils: yup.array().of(yup.string().required()),
+  obstetricsG: yup.string(),
+  obstetricsP: yup.string(),
+  obstetricsA: yup.string(),
+  obstetricsIG: yup.string(),
+  labour: yup.bool(),
+  contractions: yup.bool(),
+  contractionType: yup.string(),
+  contractionNumber: yup.string(),
+  contractionMin: yup.string(),
+  amnioticSacBroke: yup.bool(),
+  touchCm: yup.string(),
+  abortion: yup.bool(),
+  vaginalBleeding: yup.bool(),
+  rn: yup.array().of(yup.string().required()),
+  firstApgar: yup.string(),
+  secondApgar: yup.string(),
+  physicalExaminationFindingsHead: yup.string(),
+  physicalExaminationFindingsNeck: yup.string(),
+  physicalExaminationFindingsChest: yup.string(),
+  physicalExaminationFindingsAbdomen: yup.string(),
+  physicalExaminationFindingsPelvis: yup.string(),
+  physicalExaminationFindingsExtremities: yup.string(),
+  performedProcedures: yup.array().of(yup.string().required()),
+})
+
+export class InsertMedicalRecord extends React.Component<RouteComponentProps, State> {
   state = {
     showSnackbar: false,
   }
@@ -369,11 +466,11 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
         setSubmitting(false)
       })
       .catch(err => {
-        console.log(err);
+        console.log(err)
         this.setState({
           showSnackbar: true,
         })
-        setStatus(err.message || "Algo deu errado, por favor tente novamente!")
+        setStatus(err.message || 'Algo deu errado, por favor tente novamente!')
         setSubmitting(false)
       })
   }
@@ -384,8 +481,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
     })
   }
 
-  _generateRandom = (min: number, max: number) =>
-    String(Math.floor(min + Math.random() * (max + 1 - min)))
+  _generateRandom = (min: number, max: number) => String(Math.floor(min + Math.random() * (max + 1 - min)))
 
   randomData = (setFieldValue: setFieldValue) => {
     setFieldValue('vtr', this._generateRandom(1000, 10000))
@@ -393,10 +489,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
     setFieldValue('occurrenceNumber', this._generateRandom(10000, 30000))
     setFieldValue(
       'date',
-      `${this._generateRandom(2, 29)}/${this._generateRandom(1, 10)}/${this._generateRandom(
-        2018,
-        2019,
-      )}`,
+      `${this._generateRandom(2, 29)}/${this._generateRandom(1, 10)}/${this._generateRandom(2018, 2019)}`,
     )
     setFieldValue('time', `${this._generateRandom(10, 20)}:${this._generateRandom(10, 50)}`)
     setFieldValue('doctor', 'Guilherme Lima')
@@ -406,15 +499,9 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
     setFieldValue('addressNumber', '28')
     setFieldValue('neighborhood', 'Centro')
     setFieldValue('city', 'Parnaíba')
-    setFieldValue(
-      'victimSituation',
-      Object.keys(VICTIM_SITUATION)[Number(this._generateRandom(0, 3))],
-    )
+    setFieldValue('victimSituation', Object.keys(VICTIM_SITUATION)[Number(this._generateRandom(0, 3))])
     setFieldValue('complications', Object.keys(COMPLICATIONS)[Number(this._generateRandom(0, 3))])
-    setFieldValue(
-      'victimName',
-      `Fulano ${this._generateRandom(0, 10)} - ${this._generateRandom(10, 100)}`,
-    )
+    setFieldValue('victimName', `Fulano ${this._generateRandom(0, 10)} - ${this._generateRandom(10, 100)}`)
     setFieldValue('victimDoc', this._generateRandom(1000000, 9000000))
     setFieldValue('victimAge', this._generateRandom(2, 70))
     setFieldValue('victimGender', Number(this._generateRandom(0, 1000000)) % 2 === 0 ? 'M' : 'F')
@@ -430,10 +517,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
     setFieldValue('glasgowOcularOpeningAdult', this._generateRandom(1, 4))
     setFieldValue('glasgowVerbalResponseAdult', this._generateRandom(1, 5))
     setFieldValue('glasgowMotorResponseAdult', this._generateRandom(1, 6))
-    setFieldValue(
-      'traumaMechanism',
-      Object.keys(TRAUMA_MECHANISM)[Number(this._generateRandom(1, 8))],
-    )
+    setFieldValue('traumaMechanism', Object.keys(TRAUMA_MECHANISM)[Number(this._generateRandom(1, 8))])
     setFieldValue('responsive', true)
     setFieldValue('performedProcedures', [
       Object.keys(PERFORMED_PROCEDURES)[Number(this._generateRandom(0, 8))],
@@ -446,129 +530,14 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
   render() {
     return (
       <Layout match={this.props.match} history={this.props.history}>
-        <Typography
-          variant='h5'
-          style={{ marginBottom: '20px', textAlign: 'center', fontWeight: 'bold' }}
-        >
+        <Typography variant='h5' style={{ marginBottom: '20px', textAlign: 'center', fontWeight: 'bold' }}>
           Cadastro de Ficha de Atendimento
         </Typography>
 
         <Formik
           validateOnChange={false}
           validateOnBlur={false}
-          validationSchema={yup.object().shape({
-            vtr: yup.string().required(),
-            riskRating: yup.string().required(),
-            occurrenceNumber: yup.string().required(),
-            date: yup.string().required(),
-            time: yup.string().required(),
-            doctor: yup.string(),
-            requestReason: yup.string().required(),
-            requestReasonText: yup.string(),
-            location: yup.string().required(),
-            locationText: yup.string(),
-            address: yup.string().required(),
-            addressNumber: yup.string().required(),
-            neighborhood: yup.string().required(),
-            city: yup.string().required(),
-            locationSituation: yup.array().of(yup.string().required()),
-            victimSituation: yup.string(),
-            victimSituationText: yup.string(),
-            complications: yup.string(),
-            numberOfVictims: yup.number(),
-            otherServices: yup.bool().required(),
-            otherServicesText: yup.string(),
-            supportRequest: yup.array().of(yup.string().required()),
-            supportRequestText: yup.string(),
-            victimName: yup.string(),
-            victimDoc: yup.string(),
-            victimAge: yup.string(),
-            victimGender: yup.string(),
-            victimAddress: yup.string(),
-            victimAddressNeighborhood: yup.string(),
-            victimAddressCity: yup.string(),
-            victimAddressPhone: yup.string(),
-            companion: yup.string(),
-            companionDoc: yup.string(),
-            companionProximityLevel: yup.string(),
-            companionPhone: yup.string(),
-            initialPA: yup.string(),
-            currentPA: yup.string(),
-            initialFC: yup.string(),
-            currentFC: yup.string(),
-            initialFR: yup.string(),
-            currentFR: yup.string(),
-            initialDEXTRO: yup.string(),
-            currentDEXTRO: yup.string(),
-            initialSatO2: yup.string(),
-            currentSatO2: yup.string(),
-            initialTCelsius: yup.string(),
-            currentTCelsius: yup.string(),
-            allergy: yup.string(),
-            allergyText: yup.string(),
-            medicinesInUse: yup.string(),
-            medicinesInUseText: yup.string(),
-            personalBackground: yup.array().of(yup.string().required()),
-            personalBackgroundText: yup.string(),
-            glasgowOcularOpeningAdult: yup.string(),
-            glasgowVerbalResponseAdult: yup.string(),
-            glasgowMotorResponseAdult: yup.string(),
-            glasgowOcularOpeningChild: yup.string(),
-            glasgowVerbalResponseChild: yup.string(),
-            glasgowMotorResponseChild: yup.string(),
-            traumaMechanism: yup.string().required(),
-            fallHeight: yup.string(),
-            responsive: yup.bool(),
-            pulse: yup.string(),
-            accidentType: yup.array().of(yup.string().required()),
-            victimPostionInVehicle: yup.string(),
-            safetyEquipment: yup.string(),
-            victimLocation: yup.string(),
-            wandering: yup.bool(),
-            victimVehicle: yup.string(),
-            victimVehicleText: yup.string(),
-            otherInvolved: yup.string(),
-            airways: yup.string(),
-            secretionText: yup.string(),
-            breath: yup.array().of(yup.string().required()),
-            pulmonaryAuscultation: yup.array().of(yup.string().required()),
-            findings: yup.array().of(yup.string().required()),
-            findingsText: yup.string(),
-            skin: yup.array().of(yup.string().required()),
-            infusion: yup.string(),
-            heartAuscultation: yup.array().of(yup.string().required()),
-            neurologicalExamination: yup.array().of(yup.string().required()),
-            aphasia: yup.bool(),
-            otorrhagia: yup.array().of(yup.string().required()),
-            racoonEyes: yup.array().of(yup.string().required()),
-            battle: yup.array().of(yup.string().required()),
-            motorDeficit: yup.array().of(yup.string().required()),
-            stiffNeck: yup.bool(),
-            pupils: yup.array().of(yup.string().required()),
-            obstetricsG: yup.string(),
-            obstetricsP: yup.string(),
-            obstetricsA: yup.string(),
-            obstetricsIG: yup.string(),
-            labour: yup.bool(),
-            contractions: yup.bool(),
-            contractionType: yup.string(),
-            contractionNumber: yup.string(),
-            contractionMin: yup.string(),
-            amnioticSacBroke: yup.bool(),
-            touchCm: yup.string(),
-            abortion: yup.bool(),
-            vaginalBleeding: yup.bool(),
-            rn: yup.array().of(yup.string().required()),
-            firstApgar: yup.string(),
-            secondApgar: yup.string(),
-            physicalExaminationFindingsHead: yup.string(),
-            physicalExaminationFindingsNeck: yup.string(),
-            physicalExaminationFindingsChest: yup.string(),
-            physicalExaminationFindingsAbdomen: yup.string(),
-            physicalExaminationFindingsPelvis: yup.string(),
-            physicalExaminationFindingsExtremities: yup.string(),
-            performedProcedures: yup.array().of(yup.string().required()),
-          })}
+          validationSchema={validationSchema}
           initialValues={{
             vtr: '',
             riskRating: RISK_RATING.GREEN,
@@ -684,7 +653,9 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
           }}
           onSubmit={this.handleSubmit}
         >
-          {({ values, errors, isSubmitting, setFieldValue, handleSubmit, status }) => (
+          {({ values, errors, isSubmitting, setFieldValue, handleSubmit, status }) => {
+            console.log("Rendering again")
+            return (
             <>
               <Button
                 type='submit'
@@ -710,13 +681,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
               <SectionTitle text='Informações Gerais' />
               <Grid container spacing={16}>
                 <Grid item xs={12} sm={4} md={2}>
-                  <TextInput
-                    name='vtr'
-                    label='VTR'
-                    value={values.vtr}
-                    handleChange={setFieldValue}
-                    errors={errors}
-                  />
+                  <TextInput name='vtr' label='VTR' value={values.vtr} handleChange={setFieldValue} errors={errors} />
                 </Grid>
                 <Grid item xs={12} sm={4} md={3}>
                   <Select
@@ -742,7 +707,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
                   />
                 </Grid>
                 <Grid item xs={12} sm={6} md={2}>
-                  <MaskTextInput
+                  <TextInput
                     name='date'
                     label='Data'
                     placeholder='DD/MM/YYYY'
@@ -1075,10 +1040,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
                     value={SUPPORT_REQUEST.NO}
                     handleChange={(name, value) => {
                       if (values.supportRequest.includes(value)) {
-                        setFieldValue(
-                          'supportRequest',
-                          values.supportRequest.filter(x => x !== SUPPORT_REQUEST.NO),
-                        )
+                        setFieldValue('supportRequest', values.supportRequest.filter(x => x !== SUPPORT_REQUEST.NO))
                       } else {
                         setFieldValue('supportRequest', [SUPPORT_REQUEST.NO])
                       }
@@ -1232,7 +1194,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
                   />
                 </Grid>
                 <Grid item xs={12} sm={2}>
-                  <MaskTextInput
+                  <TextInput
                     name='victimAddressPhone'
                     label='Telefone'
                     value={values.victimAddressPhone}
@@ -1270,7 +1232,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
                   />
                 </Grid>
                 <Grid item xs={12} sm={3}>
-                  <MaskTextInput
+                  <TextInput
                     name='companionPhone'
                     label='Telefone do Acompanhante'
                     value={values.companionPhone}
@@ -1551,9 +1513,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
               <Checkbox
                 name='personalBackground'
                 label='Asma/Bronquite/DPOC'
-                checked={values.personalBackground.includes(
-                  PERSONAL_BACKGROUND.ASTHMA_BRONCHITIS_DPOC,
-                )}
+                checked={values.personalBackground.includes(PERSONAL_BACKGROUND.ASTHMA_BRONCHITIS_DPOC)}
                 value={PERSONAL_BACKGROUND.ASTHMA_BRONCHITIS_DPOC}
                 handleChange={insertOrRemoveFromArray(values.personalBackground, setFieldValue)}
                 extraData={values.personalBackground}
@@ -1561,9 +1521,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
               <Checkbox
                 name='personalBackground'
                 label='Nega tratamento anterior ou atual'
-                checked={values.personalBackground.includes(
-                  PERSONAL_BACKGROUND.DENY_PREVIOUS_TREATMENT,
-                )}
+                checked={values.personalBackground.includes(PERSONAL_BACKGROUND.DENY_PREVIOUS_TREATMENT)}
                 value={PERSONAL_BACKGROUND.DENY_PREVIOUS_TREATMENT}
                 handleChange={insertOrRemoveFromArray(values.personalBackground, setFieldValue)}
                 extraData={values.personalBackground}
@@ -1625,10 +1583,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
                       <Checkbox
                         name='glasgowOcularOpeningAdult'
                         label='4 - espontânea'
-                        handleChange={checkOrUncheck(
-                          values.glasgowOcularOpeningAdult,
-                          setFieldValue,
-                        )}
+                        handleChange={checkOrUncheck(values.glasgowOcularOpeningAdult, setFieldValue)}
                         value={'4'}
                         checked={values.glasgowOcularOpeningAdult === '4'}
                       />
@@ -1637,10 +1592,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
                       <Checkbox
                         name='glasgowVerbalResponseAdult'
                         label='5 - orientada'
-                        handleChange={checkOrUncheck(
-                          values.glasgowVerbalResponseAdult,
-                          setFieldValue,
-                        )}
+                        handleChange={checkOrUncheck(values.glasgowVerbalResponseAdult, setFieldValue)}
                         value={'5'}
                         checked={values.glasgowVerbalResponseAdult === '5'}
                       />
@@ -1649,10 +1601,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
                       <Checkbox
                         name='glasgowMotorResponseAdult'
                         label='6 - obedece a comandos'
-                        handleChange={checkOrUncheck(
-                          values.glasgowMotorResponseAdult,
-                          setFieldValue,
-                        )}
+                        handleChange={checkOrUncheck(values.glasgowMotorResponseAdult, setFieldValue)}
                         value={'6'}
                         checked={values.glasgowMotorResponseAdult === '6'}
                       />
@@ -1661,10 +1610,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
                       <Checkbox
                         name='glasgowOcularOpeningChild'
                         label='4 - espontânea'
-                        handleChange={checkOrUncheck(
-                          values.glasgowOcularOpeningChild,
-                          setFieldValue,
-                        )}
+                        handleChange={checkOrUncheck(values.glasgowOcularOpeningChild, setFieldValue)}
                         value={'4'}
                         checked={values.glasgowOcularOpeningChild === '4'}
                       />
@@ -1673,10 +1619,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
                       <Checkbox
                         name='glasgowVerbalResponseChild'
                         label='5 - orientado/arrulha'
-                        handleChange={checkOrUncheck(
-                          values.glasgowVerbalResponseChild,
-                          setFieldValue,
-                        )}
+                        handleChange={checkOrUncheck(values.glasgowVerbalResponseChild, setFieldValue)}
                         value={'5'}
                         checked={values.glasgowVerbalResponseChild === '5'}
                       />
@@ -1685,10 +1628,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
                       <Checkbox
                         name='glasgowMotorResponseChild'
                         label='6 - obedece a comando verbal/movimento espotâneo'
-                        handleChange={checkOrUncheck(
-                          values.glasgowMotorResponseChild,
-                          setFieldValue,
-                        )}
+                        handleChange={checkOrUncheck(values.glasgowMotorResponseChild, setFieldValue)}
                         value={'6'}
                         checked={values.glasgowMotorResponseChild === '6'}
                       />
@@ -1699,10 +1639,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
                       <Checkbox
                         name='glasgowOcularOpeningAdult'
                         label='3 - a voz'
-                        handleChange={checkOrUncheck(
-                          values.glasgowOcularOpeningAdult,
-                          setFieldValue,
-                        )}
+                        handleChange={checkOrUncheck(values.glasgowOcularOpeningAdult, setFieldValue)}
                         value={'3'}
                         checked={values.glasgowOcularOpeningAdult === '3'}
                       />
@@ -1711,10 +1648,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
                       <Checkbox
                         name='glasgowVerbalResponseAdult'
                         label='4 - confuso'
-                        handleChange={checkOrUncheck(
-                          values.glasgowVerbalResponseAdult,
-                          setFieldValue,
-                        )}
+                        handleChange={checkOrUncheck(values.glasgowVerbalResponseAdult, setFieldValue)}
                         value={'4'}
                         checked={values.glasgowVerbalResponseAdult === '4'}
                       />
@@ -1723,10 +1657,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
                       <Checkbox
                         name='glasgowMotorResponseAdult'
                         label='5 - localiza a dor'
-                        handleChange={checkOrUncheck(
-                          values.glasgowMotorResponseAdult,
-                          setFieldValue,
-                        )}
+                        handleChange={checkOrUncheck(values.glasgowMotorResponseAdult, setFieldValue)}
                         value={'5'}
                         checked={values.glasgowMotorResponseAdult === '5'}
                       />
@@ -1735,10 +1666,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
                       <Checkbox
                         name='glasgowOcularOpeningChild'
                         label='3 - a voz'
-                        handleChange={checkOrUncheck(
-                          values.glasgowOcularOpeningChild,
-                          setFieldValue,
-                        )}
+                        handleChange={checkOrUncheck(values.glasgowOcularOpeningChild, setFieldValue)}
                         value={'3'}
                         checked={values.glasgowOcularOpeningChild === '3'}
                       />
@@ -1747,10 +1675,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
                       <Checkbox
                         name='glasgowVerbalResponseChild'
                         label='4 - confuso/inquite, irritado e choroso'
-                        handleChange={checkOrUncheck(
-                          values.glasgowVerbalResponseChild,
-                          setFieldValue,
-                        )}
+                        handleChange={checkOrUncheck(values.glasgowVerbalResponseChild, setFieldValue)}
                         value={'4'}
                         checked={values.glasgowVerbalResponseChild === '4'}
                       />
@@ -1759,10 +1684,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
                       <Checkbox
                         name='glasgowMotorResponseChild'
                         label='5 - localiza a dor/retira o membro ao toque'
-                        handleChange={checkOrUncheck(
-                          values.glasgowMotorResponseChild,
-                          setFieldValue,
-                        )}
+                        handleChange={checkOrUncheck(values.glasgowMotorResponseChild, setFieldValue)}
                         value={'5'}
                         checked={values.glasgowMotorResponseChild === '5'}
                       />
@@ -1773,10 +1695,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
                       <Checkbox
                         name='glasgowOcularOpeningAdult'
                         label='2 - a dor'
-                        handleChange={checkOrUncheck(
-                          values.glasgowOcularOpeningAdult,
-                          setFieldValue,
-                        )}
+                        handleChange={checkOrUncheck(values.glasgowOcularOpeningAdult, setFieldValue)}
                         value={'2'}
                         checked={values.glasgowOcularOpeningAdult === '2'}
                       />
@@ -1785,10 +1704,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
                       <Checkbox
                         name='glasgowVerbalResponseAdult'
                         label='3 - palavras inapropriadas'
-                        handleChange={checkOrUncheck(
-                          values.glasgowVerbalResponseAdult,
-                          setFieldValue,
-                        )}
+                        handleChange={checkOrUncheck(values.glasgowVerbalResponseAdult, setFieldValue)}
                         value={'3'}
                         checked={values.glasgowVerbalResponseAdult === '3'}
                       />
@@ -1797,10 +1713,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
                       <Checkbox
                         name='glasgowMotorResponseAdult'
                         label='4 - retira a dor'
-                        handleChange={checkOrUncheck(
-                          values.glasgowMotorResponseAdult,
-                          setFieldValue,
-                        )}
+                        handleChange={checkOrUncheck(values.glasgowMotorResponseAdult, setFieldValue)}
                         value={'4'}
                         checked={values.glasgowMotorResponseAdult === '4'}
                       />
@@ -1809,10 +1722,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
                       <Checkbox
                         name='glasgowOcularOpeningChild'
                         label='2 - a dor'
-                        handleChange={checkOrUncheck(
-                          values.glasgowOcularOpeningChild,
-                          setFieldValue,
-                        )}
+                        handleChange={checkOrUncheck(values.glasgowOcularOpeningChild, setFieldValue)}
                         value={'2'}
                         checked={values.glasgowOcularOpeningChild === '2'}
                       />
@@ -1821,10 +1731,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
                       <Checkbox
                         name='glasgowVerbalResponseChild'
                         label='3 - palavras inapropriadas/chora em resposta a dor'
-                        handleChange={checkOrUncheck(
-                          values.glasgowVerbalResponseChild,
-                          setFieldValue,
-                        )}
+                        handleChange={checkOrUncheck(values.glasgowVerbalResponseChild, setFieldValue)}
                         value={'3'}
                         checked={values.glasgowVerbalResponseChild === '3'}
                       />
@@ -1833,10 +1740,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
                       <Checkbox
                         name='glasgowMotorResponseChild'
                         label='4 - retira membro a dor'
-                        handleChange={checkOrUncheck(
-                          values.glasgowMotorResponseChild,
-                          setFieldValue,
-                        )}
+                        handleChange={checkOrUncheck(values.glasgowMotorResponseChild, setFieldValue)}
                         value={'4'}
                         checked={values.glasgowMotorResponseChild === '4'}
                       />
@@ -1847,10 +1751,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
                       <Checkbox
                         name='glasgowOcularOpeningAdult'
                         label='1 - ausente'
-                        handleChange={checkOrUncheck(
-                          values.glasgowOcularOpeningAdult,
-                          setFieldValue,
-                        )}
+                        handleChange={checkOrUncheck(values.glasgowOcularOpeningAdult, setFieldValue)}
                         value={'1'}
                         checked={values.glasgowOcularOpeningAdult === '1'}
                       />
@@ -1859,10 +1760,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
                       <Checkbox
                         name='glasgowVerbalResponseAdult'
                         label='2 - sons/gemidos'
-                        handleChange={checkOrUncheck(
-                          values.glasgowVerbalResponseAdult,
-                          setFieldValue,
-                        )}
+                        handleChange={checkOrUncheck(values.glasgowVerbalResponseAdult, setFieldValue)}
                         value={'2'}
                         checked={values.glasgowVerbalResponseAdult === '2'}
                       />
@@ -1871,10 +1769,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
                       <Checkbox
                         name='glasgowMotorResponseAdult'
                         label='3 - flexão normal'
-                        handleChange={checkOrUncheck(
-                          values.glasgowMotorResponseAdult,
-                          setFieldValue,
-                        )}
+                        handleChange={checkOrUncheck(values.glasgowMotorResponseAdult, setFieldValue)}
                         value={'3'}
                         checked={values.glasgowMotorResponseAdult === '3'}
                       />
@@ -1883,10 +1778,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
                       <Checkbox
                         name='glasgowOcularOpeningChild'
                         label='1 - sem resposta'
-                        handleChange={checkOrUncheck(
-                          values.glasgowOcularOpeningChild,
-                          setFieldValue,
-                        )}
+                        handleChange={checkOrUncheck(values.glasgowOcularOpeningChild, setFieldValue)}
                         value={'1'}
                         checked={values.glasgowOcularOpeningChild === '1'}
                       />
@@ -1895,10 +1787,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
                       <Checkbox
                         name='glasgowVerbalResponseChild'
                         label='2 - sons inespecíficos/geme em resposta a dor'
-                        handleChange={checkOrUncheck(
-                          values.glasgowVerbalResponseChild,
-                          setFieldValue,
-                        )}
+                        handleChange={checkOrUncheck(values.glasgowVerbalResponseChild, setFieldValue)}
                         value={'2'}
                         checked={values.glasgowVerbalResponseChild === '2'}
                       />
@@ -1907,10 +1796,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
                       <Checkbox
                         name='glasgowMotorResponseChild'
                         label='3 - decorticação'
-                        handleChange={checkOrUncheck(
-                          values.glasgowMotorResponseChild,
-                          setFieldValue,
-                        )}
+                        handleChange={checkOrUncheck(values.glasgowMotorResponseChild, setFieldValue)}
                         value={'3'}
                         checked={values.glasgowMotorResponseChild === '3'}
                       />
@@ -1922,10 +1808,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
                       <Checkbox
                         name='glasgowVerbalResponseAdult'
                         label='1 - ausente'
-                        handleChange={checkOrUncheck(
-                          values.glasgowVerbalResponseAdult,
-                          setFieldValue,
-                        )}
+                        handleChange={checkOrUncheck(values.glasgowVerbalResponseAdult, setFieldValue)}
                         value={'1'}
                         checked={values.glasgowVerbalResponseAdult === '1'}
                       />
@@ -1934,10 +1817,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
                       <Checkbox
                         name='glasgowMotorResponseAdult'
                         label='2 - sons/gemidos'
-                        handleChange={checkOrUncheck(
-                          values.glasgowMotorResponseAdult,
-                          setFieldValue,
-                        )}
+                        handleChange={checkOrUncheck(values.glasgowMotorResponseAdult, setFieldValue)}
                         value={'2'}
                         checked={values.glasgowMotorResponseAdult === '2'}
                       />
@@ -1947,10 +1827,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
                       <Checkbox
                         name='glasgowVerbalResponseChild'
                         label='1 - sem resposta'
-                        handleChange={checkOrUncheck(
-                          values.glasgowVerbalResponseChild,
-                          setFieldValue,
-                        )}
+                        handleChange={checkOrUncheck(values.glasgowVerbalResponseChild, setFieldValue)}
                         value={'1'}
                         checked={values.glasgowVerbalResponseChild === '1'}
                       />
@@ -1959,10 +1836,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
                       <Checkbox
                         name='glasgowMotorResponseChild'
                         label='2 - descerebração'
-                        handleChange={checkOrUncheck(
-                          values.glasgowMotorResponseChild,
-                          setFieldValue,
-                        )}
+                        handleChange={checkOrUncheck(values.glasgowMotorResponseChild, setFieldValue)}
                         value={'2'}
                         checked={values.glasgowMotorResponseChild === '2'}
                       />
@@ -1975,10 +1849,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
                       <Checkbox
                         name='glasgowMotorResponseAdult'
                         label='1 - ausente'
-                        handleChange={checkOrUncheck(
-                          values.glasgowMotorResponseAdult,
-                          setFieldValue,
-                        )}
+                        handleChange={checkOrUncheck(values.glasgowMotorResponseAdult, setFieldValue)}
                         value={'1'}
                         checked={values.glasgowMotorResponseAdult === '1'}
                       />
@@ -1989,10 +1860,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
                       <Checkbox
                         name='glasgowMotorResponseChild'
                         label='1 - sem resposta'
-                        handleChange={checkOrUncheck(
-                          values.glasgowMotorResponseChild,
-                          setFieldValue,
-                        )}
+                        handleChange={checkOrUncheck(values.glasgowMotorResponseChild, setFieldValue)}
                         value={'1'}
                         checked={values.glasgowMotorResponseChild === '1'}
                       />
@@ -2181,46 +2049,35 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
               <Checkbox
                 name='victimPostionInVehicle'
                 label='Sem informação'
-                checked={
-                  values.victimPostionInVehicle === VICTIM_POSITION_IN_VEHICLE.NO_INFORMATION
-                }
+                checked={values.victimPostionInVehicle === VICTIM_POSITION_IN_VEHICLE.NO_INFORMATION}
                 value={VICTIM_POSITION_IN_VEHICLE.NO_INFORMATION}
                 handleChange={checkOrUncheck(values.victimPostionInVehicle, setFieldValue)}
               />
               <Checkbox
                 name='victimPostionInVehicle'
                 label='Condutor do veículo'
-                checked={
-                  values.victimPostionInVehicle === VICTIM_POSITION_IN_VEHICLE.VEHICLE_DRIVER
-                }
+                checked={values.victimPostionInVehicle === VICTIM_POSITION_IN_VEHICLE.VEHICLE_DRIVER}
                 value={VICTIM_POSITION_IN_VEHICLE.VEHICLE_DRIVER}
                 handleChange={checkOrUncheck(values.victimPostionInVehicle, setFieldValue)}
               />
               <Checkbox
                 name='victimPostionInVehicle'
                 label='Acompanhante dianteiro'
-                checked={
-                  values.victimPostionInVehicle === VICTIM_POSITION_IN_VEHICLE.FRONT_PASSENGER
-                }
+                checked={values.victimPostionInVehicle === VICTIM_POSITION_IN_VEHICLE.FRONT_PASSENGER}
                 value={VICTIM_POSITION_IN_VEHICLE.FRONT_PASSENGER}
                 handleChange={checkOrUncheck(values.victimPostionInVehicle, setFieldValue)}
               />
               <Checkbox
                 name='victimPostionInVehicle'
                 label='Condutor ou garupa de moto'
-                checked={
-                  values.victimPostionInVehicle ===
-                  VICTIM_POSITION_IN_VEHICLE.DRIVER_OR_MOTORCYCLE_RUMP
-                }
+                checked={values.victimPostionInVehicle === VICTIM_POSITION_IN_VEHICLE.DRIVER_OR_MOTORCYCLE_RUMP}
                 value={VICTIM_POSITION_IN_VEHICLE.DRIVER_OR_MOTORCYCLE_RUMP}
                 handleChange={checkOrUncheck(values.victimPostionInVehicle, setFieldValue)}
               />
               <Checkbox
                 name='victimPostionInVehicle'
                 label='Acompanhante traseiro'
-                checked={
-                  values.victimPostionInVehicle === VICTIM_POSITION_IN_VEHICLE.REAR_PASSENGER
-                }
+                checked={values.victimPostionInVehicle === VICTIM_POSITION_IN_VEHICLE.REAR_PASSENGER}
                 value={VICTIM_POSITION_IN_VEHICLE.REAR_PASSENGER}
                 handleChange={checkOrUncheck(values.victimPostionInVehicle, setFieldValue)}
               />
@@ -2283,12 +2140,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
                 handleChange={checkOrUncheck(values.victimLocation, setFieldValue)}
               />
               <br />
-              <Switch
-                name='wandering'
-                value={values.wandering}
-                label='Deambulando?'
-                handleChange={setFieldValue}
-              />
+              <Switch name='wandering' value={values.wandering} label='Deambulando?' handleChange={setFieldValue} />
               <SectionTitle text='Veículo da vítima' />
               <Checkbox
                 name='victimVehicle'
@@ -2544,9 +2396,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
                 value={PULMONARY_AUSCULTATION.NORMAL}
                 handleChange={(name, value) =>
                   insertOrRemoveFromArray(
-                    values.pulmonaryAuscultation.filter(
-                      x => x !== PULMONARY_AUSCULTATION.NOT_PERFORMED,
-                    ),
+                    values.pulmonaryAuscultation.filter(x => x !== PULMONARY_AUSCULTATION.NOT_PERFORMED),
                     setFieldValue,
                   )(name, value)
                 }
@@ -2555,15 +2405,11 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
               <Checkbox
                 name='pulmonaryAuscultation'
                 label='Roncos/Sibilos DE'
-                checked={values.pulmonaryAuscultation.includes(
-                  PULMONARY_AUSCULTATION.SNORING_WHEEZING_DE,
-                )}
+                checked={values.pulmonaryAuscultation.includes(PULMONARY_AUSCULTATION.SNORING_WHEEZING_DE)}
                 value={PULMONARY_AUSCULTATION.SNORING_WHEEZING_DE}
                 handleChange={(name, value) =>
                   insertOrRemoveFromArray(
-                    values.pulmonaryAuscultation.filter(
-                      x => x !== PULMONARY_AUSCULTATION.NOT_PERFORMED,
-                    ),
+                    values.pulmonaryAuscultation.filter(x => x !== PULMONARY_AUSCULTATION.NOT_PERFORMED),
                     setFieldValue,
                   )(name, value)
                 }
@@ -2572,15 +2418,11 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
               <Checkbox
                 name='pulmonaryAuscultation'
                 label='MV Diminuídos D/E'
-                checked={values.pulmonaryAuscultation.includes(
-                  PULMONARY_AUSCULTATION.MV_DECREASED_DE,
-                )}
+                checked={values.pulmonaryAuscultation.includes(PULMONARY_AUSCULTATION.MV_DECREASED_DE)}
                 value={PULMONARY_AUSCULTATION.MV_DECREASED_DE}
                 handleChange={(name, value) =>
                   insertOrRemoveFromArray(
-                    values.pulmonaryAuscultation.filter(
-                      x => x !== PULMONARY_AUSCULTATION.NOT_PERFORMED,
-                    ),
+                    values.pulmonaryAuscultation.filter(x => x !== PULMONARY_AUSCULTATION.NOT_PERFORMED),
                     setFieldValue,
                   )(name, value)
                 }
@@ -2593,9 +2435,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
                 value={PULMONARY_AUSCULTATION.MV_ABSENT_DE}
                 handleChange={(name, value) =>
                   insertOrRemoveFromArray(
-                    values.pulmonaryAuscultation.filter(
-                      x => x !== PULMONARY_AUSCULTATION.NOT_PERFORMED,
-                    ),
+                    values.pulmonaryAuscultation.filter(x => x !== PULMONARY_AUSCULTATION.NOT_PERFORMED),
                     setFieldValue,
                   )(name, value)
                 }
@@ -2608,9 +2448,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
                 value={PULMONARY_AUSCULTATION.RALES_DE}
                 handleChange={(name, value) =>
                   insertOrRemoveFromArray(
-                    values.pulmonaryAuscultation.filter(
-                      x => x !== PULMONARY_AUSCULTATION.NOT_PERFORMED,
-                    ),
+                    values.pulmonaryAuscultation.filter(x => x !== PULMONARY_AUSCULTATION.NOT_PERFORMED),
                     setFieldValue,
                   )(name, value)
                 }
@@ -2619,17 +2457,13 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
               <Checkbox
                 name='pulmonaryAuscultation'
                 label='Não realizado'
-                checked={values.pulmonaryAuscultation.includes(
-                  PULMONARY_AUSCULTATION.NOT_PERFORMED,
-                )}
+                checked={values.pulmonaryAuscultation.includes(PULMONARY_AUSCULTATION.NOT_PERFORMED)}
                 value={PULMONARY_AUSCULTATION.NOT_PERFORMED}
                 handleChange={(name, value) => {
                   if (values.pulmonaryAuscultation.includes(value)) {
                     setFieldValue(
                       'pulmonaryAuscultation',
-                      values.pulmonaryAuscultation.filter(
-                        x => x !== PULMONARY_AUSCULTATION.NOT_PERFORMED,
-                      ),
+                      values.pulmonaryAuscultation.filter(x => x !== PULMONARY_AUSCULTATION.NOT_PERFORMED),
                     )
                   } else {
                     setFieldValue('pulmonaryAuscultation', [PULMONARY_AUSCULTATION.NOT_PERFORMED])
@@ -2858,10 +2692,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
                 label='Normal'
                 checked={values.neurologicalExamination.includes(NEUROLOGICAL_EXAMINATION.NORMAL)}
                 value={NEUROLOGICAL_EXAMINATION.NORMAL}
-                handleChange={insertOrRemoveFromArray(
-                  values.neurologicalExamination,
-                  setFieldValue,
-                )}
+                handleChange={insertOrRemoveFromArray(values.neurologicalExamination, setFieldValue)}
                 extraData={values.neurologicalExamination}
               />
               <Checkbox
@@ -2869,57 +2700,34 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
                 label='Agitação'
                 checked={values.neurologicalExamination.includes(NEUROLOGICAL_EXAMINATION.SHAKING)}
                 value={NEUROLOGICAL_EXAMINATION.SHAKING}
-                handleChange={insertOrRemoveFromArray(
-                  values.neurologicalExamination,
-                  setFieldValue,
-                )}
+                handleChange={insertOrRemoveFromArray(values.neurologicalExamination, setFieldValue)}
                 extraData={values.neurologicalExamination}
               />
               <Checkbox
                 name='neurologicalExamination'
                 label='Convulsão'
-                checked={values.neurologicalExamination.includes(
-                  NEUROLOGICAL_EXAMINATION.CONVULSION,
-                )}
+                checked={values.neurologicalExamination.includes(NEUROLOGICAL_EXAMINATION.CONVULSION)}
                 value={NEUROLOGICAL_EXAMINATION.CONVULSION}
-                handleChange={insertOrRemoveFromArray(
-                  values.neurologicalExamination,
-                  setFieldValue,
-                )}
+                handleChange={insertOrRemoveFromArray(values.neurologicalExamination, setFieldValue)}
                 extraData={values.neurologicalExamination}
               />
               <Checkbox
                 name='neurologicalExamination'
                 label='Sonolência'
-                checked={values.neurologicalExamination.includes(
-                  NEUROLOGICAL_EXAMINATION.SOMNOLENCE,
-                )}
+                checked={values.neurologicalExamination.includes(NEUROLOGICAL_EXAMINATION.SOMNOLENCE)}
                 value={NEUROLOGICAL_EXAMINATION.SOMNOLENCE}
-                handleChange={insertOrRemoveFromArray(
-                  values.neurologicalExamination,
-                  setFieldValue,
-                )}
+                handleChange={insertOrRemoveFromArray(values.neurologicalExamination, setFieldValue)}
                 extraData={values.neurologicalExamination}
               />
               <Checkbox
                 name='neurologicalExamination'
                 label='Obnubilação'
-                checked={values.neurologicalExamination.includes(
-                  NEUROLOGICAL_EXAMINATION.OBNUBILATION,
-                )}
+                checked={values.neurologicalExamination.includes(NEUROLOGICAL_EXAMINATION.OBNUBILATION)}
                 value={NEUROLOGICAL_EXAMINATION.OBNUBILATION}
-                handleChange={insertOrRemoveFromArray(
-                  values.neurologicalExamination,
-                  setFieldValue,
-                )}
+                handleChange={insertOrRemoveFromArray(values.neurologicalExamination, setFieldValue)}
                 extraData={values.neurologicalExamination}
               />
-              <Switch
-                name='aphasia'
-                value={values.aphasia}
-                label='Afasia?'
-                handleChange={setFieldValue}
-              />
+              <Switch name='aphasia' value={values.aphasia} label='Afasia?' handleChange={setFieldValue} />
               <Grid container spacing={16}>
                 <Grid item xs={12} sm={2}>
                   <SectionTitle text='Otorragia' />
@@ -3108,12 +2916,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
                   />
                 </Grid>
                 <Grid item xs={12} sm={2}>
-                  <Switch
-                    name='labour'
-                    value={values.labour}
-                    label='Trabalho de parto?'
-                    handleChange={setFieldValue}
-                  />
+                  <Switch name='labour' value={values.labour} label='Trabalho de parto?' handleChange={setFieldValue} />
                 </Grid>
                 <Grid item xs={12} sm={2}>
                   <Switch
@@ -3177,12 +2980,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
                   />
                 </Grid>
                 <Grid item xs={6} sm={2}>
-                  <Switch
-                    name='abortion'
-                    value={values.abortion}
-                    label='Abortamento'
-                    handleChange={setFieldValue}
-                  />
+                  <Switch name='abortion' value={values.abortion} label='Abortamento' handleChange={setFieldValue} />
                 </Grid>
                 <Grid item xs={6} sm={2}>
                   <Switch
@@ -3373,9 +3171,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
               <Checkbox
                 name='performedProcedures'
                 label='Monitoriz. Cardíaca'
-                checked={values.performedProcedures.includes(
-                  PERFORMED_PROCEDURES.CARDIAC_MONITORING,
-                )}
+                checked={values.performedProcedures.includes(PERFORMED_PROCEDURES.CARDIAC_MONITORING)}
                 value={PERFORMED_PROCEDURES.CARDIAC_MONITORING}
                 handleChange={insertOrRemoveFromArray(values.performedProcedures, setFieldValue)}
                 extraData={values.performedProcedures}
@@ -3391,9 +3187,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
               <Checkbox
                 name='performedProcedures'
                 label='Marcapasso'
-                checked={values.performedProcedures.includes(
-                  PERFORMED_PROCEDURES.CARDIPACEMAKERAC_MONITORING,
-                )}
+                checked={values.performedProcedures.includes(PERFORMED_PROCEDURES.CARDIPACEMAKERAC_MONITORING)}
                 value={PERFORMED_PROCEDURES.CARDIPACEMAKERAC_MONITORING}
                 handleChange={insertOrRemoveFromArray(values.performedProcedures, setFieldValue)}
                 extraData={values.performedProcedures}
@@ -3510,7 +3304,7 @@ export class InsertMedicalRecord extends React.PureComponent<RouteComponentProps
                 </Grid>
               </Grid>
             </>
-          )}
+          )}}
         </Formik>
       </Layout>
     )

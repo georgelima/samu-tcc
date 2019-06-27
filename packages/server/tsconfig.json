@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "lib": ["esnext.array", "es5", "es6"],
+    "lib": ["dom", "esnext.array", "es5", "es6"],
     "target": "ES2016",
     "module": "commonjs",
     "moduleResolution": "node",

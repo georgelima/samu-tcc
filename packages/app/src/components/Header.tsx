@@ -29,7 +29,7 @@ const Toolbar = styled(MuiToolbar)`
   }
 `
 
-export const Header = ({ toggleDrawer, history }: Props) => {
+export const Header = React.memo(({ toggleDrawer, history }: Props) => {
   const [now, setNow] = useState(new Date())
 
   useEffect(() => {
@@ -38,7 +38,7 @@ export const Header = ({ toggleDrawer, history }: Props) => {
     return () => {
       clearInterval(interval)
     }
-  })
+  }, [])
 
   return (
     <Wrapper>
@@ -71,4 +71,4 @@ export const Header = ({ toggleDrawer, history }: Props) => {
       </AppBar>
     </Wrapper>
   )
-}
+})
