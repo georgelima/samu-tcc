@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { RouteComponentProps } from 'react-router-dom'
 import { Grid } from '@material-ui/core'
-import { AddCircleOutline, BarChartOutlined, InsertDriveFileOutlined } from '@material-ui/icons'
+import { AddCircleOutline, BarChartOutlined, InsertDriveFileOutlined, SearchOutlined } from '@material-ui/icons'
 
 import { Layout } from '../components/Layout'
 
@@ -40,6 +40,11 @@ const Icon = styled.span`
 const SECTIONS = [
   { label: 'Cadastrar Atendimento', route: '/novo', icon: <AddCircleOutline nativeColor='white' fontSize='inherit' /> },
   { label: 'Estatísticas', route: '/dashboard', icon: <BarChartOutlined nativeColor='white' fontSize='inherit' /> },
+  {
+    label: 'Consultar Atendimentos',
+    route: '/consulta',
+    icon: <SearchOutlined nativeColor='white' fontSize='inherit' />,
+  },
   {
     label: 'Relatórios',
     route: '/relatorio',
