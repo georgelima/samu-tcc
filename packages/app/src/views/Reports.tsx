@@ -231,6 +231,7 @@ export const Reports = (props: RouteComponentProps) => {
                 generateReport({ from: range.from, to: range.to })
                   .then(data => setData(new Object(data)))
                   .catch(err => {
+                    setSubmitting(false)
                     setShowSnackbar(true)
                     setMessage('Algo deu errado! Por favor tente novamente mais tarde!')
                   })
@@ -425,14 +426,6 @@ export const Reports = (props: RouteComponentProps) => {
                     {renderValue(data.ethylBreath, data.traumaMechanism.trafficAccident)}
                   </Text>
                 </View>
-                {/* trafficAccidentByOccurrenceType: {
-    trampling: trafficAccidentByOccurrenceType.TRAMPLING,
-    front: trafficAccidentByOccurrenceType.FRONT,
-    side: trafficAccidentByOccurrenceType.SIDE,
-    rear: trafficAccidentByOccurrenceType.REAR,
-    rollover: trafficAccidentByOccurrenceType.ROLLOVER,
-    rotational: trafficAccidentByOccurrenceType.ROTATIONAL,
-  }, */}
                 <View style={styles.titleWrapper}>
                   <Text style={styles.key}>7 - TOTAL DE OCORRÊNCIAS POR TIPO DE ACIDENTE</Text>
                   <Text style={styles.value}>{data.traumaMechanism.trafficAccident}</Text>
@@ -473,108 +466,154 @@ export const Reports = (props: RouteComponentProps) => {
                     {renderValue(data.trafficAccidentByOccurrenceType.rotational, data.traumaMechanism.trafficAccident)}
                   </Text>
                 </View>
-
                 <View style={styles.titleWrapper}>
                   <Text style={styles.key}>8 - TOTAL DE OCORRÊNCIAS POR MEIO DE LOCOMOÇÃO DA VÍTIMA</Text>
-                  <Text style={styles.value}>0</Text>
+                  <Text style={styles.value}>{data.traumaMechanism.trafficAccident}</Text>
                 </View>
                 <View style={styles.subTitleWrapper}>
                   <Text style={styles.key}>8.1 - CARRO</Text>
-                  <Text style={styles.value}>0 (0%)</Text>
+                  <Text style={styles.value}>
+                    {renderValue(data.victimVehicle.car, data.traumaMechanism.trafficAccident)}
+                  </Text>
                 </View>
                 <View style={styles.subTitleWrapper}>
                   <Text style={styles.key}>8.2 - MOTO</Text>
-                  <Text style={styles.value}>0 (0%)</Text>
+                  <Text style={styles.value}>
+                    {renderValue(data.victimVehicle.motorcycle, data.traumaMechanism.trafficAccident)}
+                  </Text>
                 </View>
                 <View style={styles.subTitleWrapper}>
                   <Text style={styles.key}>8.3 - CAMINHÃO</Text>
-                  <Text style={styles.value}>0 (0%)</Text>
+                  <Text style={styles.value}>
+                    {renderValue(data.victimVehicle.truck, data.traumaMechanism.trafficAccident)}
+                  </Text>
                 </View>
                 <View style={styles.subTitleWrapper}>
                   <Text style={styles.key}>8.4 - ÔNIBUS</Text>
-                  <Text style={styles.value}>0 (0%)</Text>
+                  <Text style={styles.value}>
+                    {renderValue(data.victimVehicle.bus, data.traumaMechanism.trafficAccident)}
+                  </Text>
                 </View>
                 <View style={styles.subTitleWrapper}>
                   <Text style={styles.key}>8.5 - VAN</Text>
-                  <Text style={styles.value}>0 (0%)</Text>
+                  <Text style={styles.value}>
+                    {renderValue(data.victimVehicle.van, data.traumaMechanism.trafficAccident)}
+                  </Text>
                 </View>
                 <View style={styles.subTitleWrapper}>
                   <Text style={styles.key}>8.6 - BICICLETA</Text>
-                  <Text style={styles.value}>0 (0%)</Text>
+                  <Text style={styles.value}>
+                    {renderValue(data.victimVehicle.bike, data.traumaMechanism.trafficAccident)}
+                  </Text>
                 </View>
                 <View style={styles.subTitleWrapper}>
                   <Text style={styles.key}>8.7 - SEM INFORMACÃO</Text>
-                  <Text style={styles.value}>0 (0%)</Text>
-                </View>
-                <View style={styles.subTitleWrapper}>
-                  <Text style={styles.key}>8.8 - OUTRO</Text>
-                  <Text style={styles.value}>0 (0%)</Text>
+                  <Text style={styles.value}>
+                    {renderValue(data.victimVehicle.noInformation, data.traumaMechanism.trafficAccident)}
+                  </Text>
                 </View>
                 <View style={styles.titleWrapper}>
                   <Text style={styles.key}>
                     9 - TOTAL DE OCORRÊNCIAS POR MEIO DE LOCOMOÇÃO DA OUTRA PARTE ENVOLVIDA
                   </Text>
-                  <Text style={styles.value}>0</Text>
+                  <Text style={styles.value}>{data.traumaMechanism.trafficAccident}</Text>
                 </View>
+                {/* car: result.frequenceByOtherInvolvedVehicle.CAR,
+          motorcycle: result.frequenceByOtherInvolvedVehicle.MOTORCYCLE,
+          truck: result.frequenceByOtherInvolvedVehicle.TRUCK,
+          bus: result.frequenceByOtherInvolvedVehicle.BUS,
+          van: result.frequenceByOtherInvolvedVehicle.VAN,
+          bike: result.frequenceByOtherInvolvedVehicle.BIKE,
+          noInformation: result.frequenceByOtherInvolvedVehicle.NO_INFORMATION,
+          pedestrian: result.frequenceByOtherInvolvedVehicle.PEDESTRIAN,
+          wallLampostTree: result.frequenceByOtherInvolvedVehicle.WALL_LAMPOST_TREE, */}
                 <View style={styles.subTitleWrapper}>
                   <Text style={styles.key}>9.1 - CARRO</Text>
-                  <Text style={styles.value}>0 (0%)</Text>
+                  <Text style={styles.value}>
+                    {renderValue(data.otherInvolvedVehicle.car, data.traumaMechanism.trafficAccident)}
+                  </Text>
                 </View>
                 <View style={styles.subTitleWrapper}>
                   <Text style={styles.key}>9.2 - MOTO</Text>
-                  <Text style={styles.value}>0 (0%)</Text>
+                  <Text style={styles.value}>
+                    {renderValue(data.otherInvolvedVehicle.motorcycle, data.traumaMechanism.trafficAccident)}
+                  </Text>
                 </View>
                 <View style={styles.subTitleWrapper}>
                   <Text style={styles.key}>9.3 - CAMINHÃO</Text>
-                  <Text style={styles.value}>0 (0%)</Text>
+                  <Text style={styles.value}>
+                    {renderValue(data.otherInvolvedVehicle.truck, data.traumaMechanism.trafficAccident)}
+                  </Text>
                 </View>
                 <View style={styles.subTitleWrapper}>
                   <Text style={styles.key}>9.4 - ÔNIBUS</Text>
-                  <Text style={styles.value}>0 (0%)</Text>
+                  <Text style={styles.value}>
+                    {renderValue(data.otherInvolvedVehicle.bus, data.traumaMechanism.trafficAccident)}
+                  </Text>
                 </View>
                 <View style={styles.subTitleWrapper}>
                   <Text style={styles.key}>9.5 - VAN</Text>
-                  <Text style={styles.value}>0 (0%)</Text>
+                  <Text style={styles.value}>
+                    {renderValue(data.otherInvolvedVehicle.van, data.traumaMechanism.trafficAccident)}
+                  </Text>
                 </View>
                 <View style={styles.subTitleWrapper}>
                   <Text style={styles.key}>9.6 - BICICLETA</Text>
-                  <Text style={styles.value}>0 (0%)</Text>
+                  <Text style={styles.value}>
+                    {renderValue(data.otherInvolvedVehicle.bike, data.traumaMechanism.trafficAccident)}
+                  </Text>
                 </View>
                 <View style={styles.subTitleWrapper}>
                   <Text style={styles.key}>9.7 - PEDESTRE</Text>
-                  <Text style={styles.value}>0 (0%)</Text>
+                  <Text style={styles.value}>
+                    {renderValue(data.otherInvolvedVehicle.pedestrian, data.traumaMechanism.trafficAccident)}
+                  </Text>
                 </View>
                 <View style={styles.subTitleWrapper}>
                   <Text style={styles.key}>9.8 - SEM INFORMACÃO</Text>
-                  <Text style={styles.value}>0 (0%)</Text>
+                  <Text style={styles.value}>
+                    {renderValue(data.otherInvolvedVehicle.noInformation, data.traumaMechanism.trafficAccident)}
+                  </Text>
                 </View>
                 <View style={styles.subTitleWrapper}>
                   <Text style={styles.key}>9.9 - MURO/POSTE/ÁRVORE</Text>
-                  <Text style={styles.value}>0 (0%)</Text>
+                  <Text style={styles.value}>
+                    {renderValue(data.otherInvolvedVehicle.wallLampostTree, data.traumaMechanism.trafficAccident)}
+                  </Text>
                 </View>
                 <View style={styles.titleWrapper}>
                   <Text style={styles.key}>10 - TOTAL DE OCORRÊNCIAS POR EQUIPAMENTO DE SEGURANÇA</Text>
-                  <Text style={styles.value}>0</Text>
+                  <Text style={styles.value}>{data.traumaMechanism.trafficAccident}</Text>
                 </View>
                 <View style={styles.subTitleWrapper}>
                   <Text style={styles.key}>10.1 - NÃO USAVA</Text>
-                  <Text style={styles.value}>0 (0%)</Text>
+                  <Text style={styles.value}>
+                    {renderValue(data.safetyEquipment.none, data.traumaMechanism.trafficAccident)}
+                  </Text>
                 </View>
                 <View style={styles.subTitleWrapper}>
                   <Text style={styles.key}>10.2 - CINTO DE 2 OU 3 PONTOS</Text>
-                  <Text style={styles.value}>0 (0%)</Text>
+                  <Text style={styles.value}>
+                    {renderValue(data.safetyEquipment.twoOrThreePointBelt, data.traumaMechanism.trafficAccident)}
+                  </Text>
                 </View>
                 <View style={styles.subTitleWrapper}>
                   <Text style={styles.key}>10.3 - CAPACETE RETIRADO PELA EQUIPE</Text>
-                  <Text style={styles.value}>0 (0%)</Text>
+                  <Text style={styles.value}>
+                    {renderValue(data.safetyEquipment.helmetTakenByTeam, data.traumaMechanism.trafficAccident)}
+                  </Text>
                 </View>
                 <View style={styles.subTitleWrapper}>
                   <Text style={styles.key}>10.4 - CAPACETE RETIRADO POR OUTROS</Text>
-                  <Text style={styles.value}>0 (0%)</Text>
+                  <Text style={styles.value}>
+                    {renderValue(data.safetyEquipment.helmetTakenByOthers, data.traumaMechanism.trafficAccident)}
+                  </Text>
                 </View>
                 <View style={styles.subTitleWrapper}>
                   <Text style={styles.key}>10.5 - SEM INFORMACÃO</Text>
-                  <Text style={styles.value}>0 (0%)</Text>
+                  <Text style={styles.value}>
+                    {renderValue(data.safetyEquipment.noInformation, data.traumaMechanism.trafficAccident)}
+                  </Text>
                 </View>
 
                 <Text

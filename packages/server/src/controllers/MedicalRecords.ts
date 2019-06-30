@@ -50,6 +50,13 @@ const stringToDate = function(dateString, timeString = '') {
   return new Date(yyyy, mm - 1, dd, Number(hh), Number(ss))
 }
 
+const incrementPath: (obj: object, path: string[]) => { [k: string]: any } = (obj, path) => {
+  const lens = R.lensPath(path)
+  const value: number = R.path(path, obj)
+
+  return R.set(lens, (value || 0) + 1, obj)
+}
+
 export const MedicalRecordsController = {
   async generateReport(ctx: Context) {
     try {
@@ -63,65 +70,73 @@ export const MedicalRecordsController = {
         date: { $gte: startDate, $lte: endDate },
       }).populate('victimData')
 
-      const recordsByRequestReason = records.reduce(
-        (acc, cur) => {
-          return { ...acc, [cur.requestReason]: acc[cur.requestReason] + 1 }
-        },
-        {
-          CLINICAL: 0,
-          SURGICAL: 0,
-          OBSTETRIC: 0,
-          PSYCHIATRIC: 0,
-          PEDIATRIC: 0,
-          INTERHOSPITAL_TRANSPORT: 0,
-          OTHER: 0,
-        },
-      )
+      // Start map
 
-      const ageGroup = records.reduce(
+      const result = records.reduce(
         (acc, cur) => {
+          let payload = acc
+
+          // @ts-ignore
+          payload = incrementPath(payload, ['frequencyByGender', cur.victimData.gender || 'U'])
+
           if (cur.victimData.age) {
             if (cur.victimData.age <= 14) {
-              return { ...acc, '0 - 14': acc['0 - 14'] + 1 }
+              // @ts-ignore
+              payload = incrementPath(payload, ['frequencyByAge', '0 - 14'])
+            } else if (cur.victimData.age <= 24) {
+              // @ts-ignore
+              payload = incrementPath(payload, ['frequencyByAge', '15 - 24'])
+            } else if (cur.victimData.age <= 50) {
+              // @ts-ignore
+              payload = incrementPath(payload, ['frequencyByAge', '25 - 50'])
+            } else if (cur.victimData.age <= 64) {
+              // @ts-ignore
+              payload = incrementPath(payload, ['frequencyByAge', '51 - 64'])
+            } else {
+              // @ts-ignore
+              payload = incrementPath(payload, ['frequencyByAge', '65 +'])
             }
-            if (cur.victimData.age <= 24) {
-              return { ...acc, '15 - 24': acc['15 - 24'] + 1 }
-            }
-            if (cur.victimData.age <= 50) {
-              return { ...acc, '25 - 50': acc['25 - 50'] + 1 }
-            }
-            if (cur.victimData.age <= 64) {
-              return { ...acc, '51 - 64': acc['51 - 64'] + 1 }
-            }
-            return { ...acc, '65 +': acc['65 +'] + 1 }
           }
 
-          return acc
+          cur.traumaMechanism.forEach(trauma => {
+            // @ts-ignore
+            payload = incrementPath(payload, ['frequencyByTraumaMechanism', trauma])
+          })
+
+          // @ts-ignore
+          payload = incrementPath(payload, ['frequencyByRequestReason', cur.requestReason])
+
+          if (cur.traumaMechanism.some(x => x === 'TRAFFIC_ACCIDENT')) {
+            if ((cur.findings || []).some(x => x === 'ETHYL_BREATH')) {
+              // @ts-ignore
+              payload = incrementPath(payload, ['ethylBreath'])
+            }
+
+            cur.accidentType.forEach(type => {
+              // @ts-ignore
+              payload = incrementPath(payload, ['frequencyByTrafficAccidentByOccurrenceType', type])
+            })
+          }
+
+          // @ts-ignore
+          payload = incrementPath(payload, ['frequenceByVictimVehicle', cur.victimVehicle])
+          // @ts-ignore
+          payload = incrementPath(payload, ['frequenceByOtherInvolvedVehicle', cur.otherInvolved])
+          //@ts-ignore
+          payload = incrementPath(payload, ['frequenceBySafetyEquipment', cur.safetyEquipment])
+
+          return payload
         },
         {
-          '0 - 14': 0,
-          '15 - 24': 0,
-          '25 - 50': 0,
-          '51 - 64': 0,
-          '65 +': 0,
-        },
-      )
-
-      const genderGroup = records.reduce(
-        (acc, cur) => ({ ...acc, [cur.victimData.gender]: acc[cur.victimData.gender] + 1 }),
-        { M: 0, F: 0, U: 0 },
-      )
-
-      const traumaMechanismGroup = R.pipe(
-        R.map(R.prop('traumaMechanism')),
-        R.flatten,
-        R.reduce(
-          (acc, cur) => ({
-            ...acc,
-            // @ts-ignore
-            [cur]: acc[cur] + 1,
-          }),
-          {
+          frequencyByGender: { M: 0, F: 0, U: 0 },
+          frequencyByAge: {
+            '0 - 14': 0,
+            '15 - 24': 0,
+            '25 - 50': 0,
+            '51 - 64': 0,
+            '65 +': 0,
+          },
+          frequencyByTraumaMechanism: {
             TRAFFIC_ACCIDENT: 0,
             FAB: 0,
             FALL: 0,
@@ -131,65 +146,123 @@ export const MedicalRecordsController = {
             BURN: 0,
             AGGRESSION: 0,
           },
-        ),
-      )(records)
+          ethylBreath: 0,
+          frequencyByRequestReason: {
+            CLINICAL: 0,
+            SURGICAL: 0,
+            OBSTETRIC: 0,
+            PSYCHIATRIC: 0,
+            PEDIATRIC: 0,
+            INTERHOSPITAL_TRANSPORT: 0,
+            OTHER: 0,
+          },
+          frequencyByTrafficAccidentByOccurrenceType: {
+            TRAMPLING: 0,
+            FRONT: 0,
+            SIDE: 0,
+            REAR: 0,
+            ROLLOVER: 0,
+            ROTATIONAL: 0,
+          },
+          frequenceByVictimVehicle: {
+            CAR: 0,
+            MOTORCYCLE: 0,
+            TRUCK: 0,
+            BUS: 0,
+            VAN: 0,
+            BIKE: 0,
+            NO_INFORMATION: 0,
+          },
+          frequenceByOtherInvolvedVehicle: {
+            CAR: 0,
+            MOTORCYCLE: 0,
+            TRUCK: 0,
+            BUS: 0,
+            VAN: 0,
+            BIKE: 0,
+            NO_INFORMATION: 0,
+            PEDESTRIAN: 0,
+            WALL_LAMPOST_TREE: 0,
+          },
+          frequenceBySafetyEquipment: {
+            NONE: 0,
+            NO_INFORMATION: 0,
+            TWO_OR_THREE_POINT_BELT: 0,
+            HELMET_TAKEN_BY_TEAM: 0,
+            HELMET_TAKEN_BY_OTHERS: 0,
+          },
+        },
+      )
 
-      const ethylBreath = records.reduce((acc, cur) => {
-        return (cur.findings || []).some(x => x === 'ETHYL_BREATH') ? acc + 1 : acc
-      }, 0)
+      // End map
 
-      const trafficAccidentByOccurrenceType = records
-        .filter(cur => cur.traumaMechanism.some(x => x === 'TRAFFIC_ACCIDENT'))
-        .map(cur => cur.accidentType)
-        .flat()
-        .reduce((acc, cur) => ({ ...acc, [cur]: acc[cur] + 1 }), {
-          TRAMPLING: 0,
-          FRONT: 0,
-          SIDE: 0,
-          REAR: 0,
-          ROLLOVER: 0,
-          ROTATIONAL: 0,
-        })
-
+      ctx.status = 200
       ctx.body = {
         total: records.length,
         from,
         to,
         recordsByRequestReason: {
-          clinical: recordsByRequestReason.CLINICAL,
-          surgical: recordsByRequestReason.SURGICAL,
-          obstetric: recordsByRequestReason.OBSTETRIC,
-          psychiatric: recordsByRequestReason.PSYCHIATRIC,
-          pediatric: recordsByRequestReason.PEDIATRIC,
-          interhospitalTransport: recordsByRequestReason.INTERHOSPITAL_TRANSPORT,
-          other: recordsByRequestReason.OTHER,
+          clinical: result.frequencyByRequestReason.CLINICAL,
+          surgical: result.frequencyByRequestReason.SURGICAL,
+          obstetric: result.frequencyByRequestReason.OBSTETRIC,
+          psychiatric: result.frequencyByRequestReason.PSYCHIATRIC,
+          pediatric: result.frequencyByRequestReason.PEDIATRIC,
+          interhospitalTransport: result.frequencyByRequestReason.INTERHOSPITAL_TRANSPORT,
+          other: result.frequencyByRequestReason.OTHER,
         },
-        ageGroup,
+        ageGroup: result.frequencyByAge,
         gender: {
-          male: genderGroup.M,
-          female: genderGroup.F,
+          male: result.frequencyByGender.M,
+          female: result.frequencyByGender.F,
+          unknown: result.frequencyByGender.U,
         },
         traumaMechanism: {
-          trafficAccident: traumaMechanismGroup.TRAFFIC_ACCIDENT,
-          fab: traumaMechanismGroup.FAB,
-          fall: traumaMechanismGroup.FALL,
-          interlocking: traumaMechanismGroup.INTERLOCKING,
-          fpaf: traumaMechanismGroup.FPAF,
-          fallOwnHeight: traumaMechanismGroup.FALL_OWN_HEIGHT,
-          burn: traumaMechanismGroup.BURN,
-          aggression: traumaMechanismGroup.AGGRESSION,
+          trafficAccident: result.frequencyByTraumaMechanism.TRAFFIC_ACCIDENT,
+          fab: result.frequencyByTraumaMechanism.FAB,
+          fall: result.frequencyByTraumaMechanism.FALL,
+          interlocking: result.frequencyByTraumaMechanism.INTERLOCKING,
+          fpaf: result.frequencyByTraumaMechanism.FPAF,
+          fallOwnHeight: result.frequencyByTraumaMechanism.FALL_OWN_HEIGHT,
+          burn: result.frequencyByTraumaMechanism.BURN,
+          aggression: result.frequencyByTraumaMechanism.AGGRESSION,
         },
-        ethylBreath,
+        ethylBreath: result.ethylBreath,
         trafficAccidentByOccurrenceType: {
-          trampling: trafficAccidentByOccurrenceType.TRAMPLING,
-          front: trafficAccidentByOccurrenceType.FRONT,
-          side: trafficAccidentByOccurrenceType.SIDE,
-          rear: trafficAccidentByOccurrenceType.REAR,
-          rollover: trafficAccidentByOccurrenceType.ROLLOVER,
-          rotational: trafficAccidentByOccurrenceType.ROTATIONAL,
+          trampling: result.frequencyByTrafficAccidentByOccurrenceType.TRAMPLING,
+          front: result.frequencyByTrafficAccidentByOccurrenceType.FRONT,
+          side: result.frequencyByTrafficAccidentByOccurrenceType.SIDE,
+          rear: result.frequencyByTrafficAccidentByOccurrenceType.REAR,
+          rollover: result.frequencyByTrafficAccidentByOccurrenceType.ROLLOVER,
+          rotational: result.frequencyByTrafficAccidentByOccurrenceType.ROTATIONAL,
+        },
+        victimVehicle: {
+          car: result.frequenceByVictimVehicle.CAR,
+          motorcycle: result.frequenceByVictimVehicle.MOTORCYCLE,
+          truck: result.frequenceByVictimVehicle.TRUCK,
+          bus: result.frequenceByVictimVehicle.BUS,
+          van: result.frequenceByVictimVehicle.VAN,
+          bike: result.frequenceByVictimVehicle.BIKE,
+          noInformation: result.frequenceByVictimVehicle.NO_INFORMATION,
+        },
+        otherInvolvedVehicle: {
+          car: result.frequenceByOtherInvolvedVehicle.CAR,
+          motorcycle: result.frequenceByOtherInvolvedVehicle.MOTORCYCLE,
+          truck: result.frequenceByOtherInvolvedVehicle.TRUCK,
+          bus: result.frequenceByOtherInvolvedVehicle.BUS,
+          van: result.frequenceByOtherInvolvedVehicle.VAN,
+          bike: result.frequenceByOtherInvolvedVehicle.BIKE,
+          noInformation: result.frequenceByOtherInvolvedVehicle.NO_INFORMATION,
+          pedestrian: result.frequenceByOtherInvolvedVehicle.PEDESTRIAN,
+          wallLampostTree: result.frequenceByOtherInvolvedVehicle.WALL_LAMPOST_TREE,
+        },
+        safetyEquipment: {
+          none: result.frequenceBySafetyEquipment.NONE,
+          twoOrThreePointBelt: result.frequenceBySafetyEquipment.TWO_OR_THREE_POINT_BELT,
+          helmetTakenByOthers: result.frequenceBySafetyEquipment.HELMET_TAKEN_BY_OTHERS,
+          helmetTakenByTeam: result.frequenceBySafetyEquipment.HELMET_TAKEN_BY_TEAM,
+          noInformation: result.frequenceBySafetyEquipment.NO_INFORMATION,
         },
       }
-      ctx.status = 200
     } catch (err) {
       console.log(err)
       ctx.status = 500
@@ -235,13 +308,6 @@ export const MedicalRecordsController = {
           stringDate: dateFns.format(record.date, 'DD/MM/YYYY'),
         })),
       )
-
-      const incrementPath: (obj: object, path: string[]) => { [k: string]: any } = (obj, path) => {
-        const lens = R.lensPath(path)
-        const value: number = R.path(path, obj)
-
-        return R.set(lens, (value || 0) + 1, obj)
-      }
 
       const result = records.reduce(
         (acc, cur) => {
@@ -311,14 +377,17 @@ export const MedicalRecordsController = {
     }
   },
   async find(ctx: Context) {
-    const { offset, limit } = ctx.request.query
+    const { offset, limit, orderDirection, orderBy } = ctx.request.query
+
+    const sortBy = orderDirection === 'desc' ? 1 : -1
+    const sortKey = orderBy || 'date'
 
     try {
       ctx.body = {
         records: await MedicalRecord.find()
+          .sort({ [sortKey]: sortBy })
           .limit(Number(limit) || 0)
           .skip(Number(offset) || 0)
-          .sort('date')
           .populate('victimData occurrenceLocation performedProcedures'),
         totalCount: await MedicalRecord.countDocuments(),
       }
