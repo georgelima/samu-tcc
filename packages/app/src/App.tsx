@@ -16,8 +16,6 @@ const InsertMedicalRecord = lazy(() =>
 const ListRecords = lazy(() => import('./views/ListRecords').then(module => ({ default: module.ListRecords })))
 const Reports = lazy(() => import('./views/Reports').then(module => ({ default: module.Reports })))
 
-import 'react-vis/dist/style.css'
-
 const Wrapper = styled.div`
   padding-left: 20px;
   padding-right: 20px;
