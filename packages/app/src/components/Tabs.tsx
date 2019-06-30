@@ -14,7 +14,7 @@ export const Tabs = memo(({ tabs }: Props) => {
     <Paper>
       <MuiTabs value={value} onChange={(event, value) => setValue(value)}>
         {tabs.map(({ label }) => (
-          <Tab label={label} />
+          <Tab label={label} key={`tab-label-${label}`} />
         ))}
       </MuiTabs>
       {child ? child.children : null}
