@@ -78,60 +78,61 @@ export const Authorization = (props: RouteComponentProps) => {
             }
 
             Auth.authenticate(res.token)
-            location.reload()
+            props.history.push('/')
           })
           .catch(err => {
-            console.log(err)
             setSubmitting(false)
             setStatus('Algo deu errado, tente novamente!')
           })
       }
     >
       {({ values, setFieldValue, handleSubmit, isSubmitting, errors, status }) => (
-        <Wrapper>
-          <Paper>
-            Credenciais para teste <br />
-            cpf: 123.456.789-00 password: 123456
-            <Heading variant='h4'>WebSAMU</Heading>
-            <Card>
-              <Field
-                mask='999.999.999-99'
-                name='cpf'
-                handleChange={setFieldValue}
-                label='CPF'
-                value={values.cpf}
-                errors={errors}
-                startAdornment={<AccountCircleOutlined />}
-              />
-              <Field
-                name='password'
-                handleChange={setFieldValue}
-                label='Senha'
-                value={values.password}
-                errors={errors}
-                type={showPassword ? 'text' : 'password'}
-                startAdornment={<VpnKeyOutlined />}
-                endAdornment={
-                  <IconButton aria-label='Toggle password visibility' onClick={() => setShowPassword(!showPassword)}>
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                }
-              />
-              {status && <Error variant='caption'>{status}</Error>}
-              <Button
-                type='submit'
-                fullWidth
-                variant='outlined'
-                style={{ alignSelf: 'flex-end' }}
-                onClick={evt => handleSubmit()}
-                disabled={isSubmitting}
-                id='submit-medical-record-button'
-              >
-                {isSubmitting ? 'Autenticando...' : 'Entrar'}
-              </Button>
-            </Card>
-          </Paper>
-        </Wrapper>
+        <form onSubmit={handleSubmit}>
+          <Wrapper>
+            <Paper>
+              Credenciais para teste <br />
+              cpf: 123.456.789-00 password: 123456
+              <Heading variant='h4'>WebSAMU</Heading>
+              <Card>
+                <Field
+                  mask='999.999.999-99'
+                  name='cpf'
+                  handleChange={setFieldValue}
+                  label='CPF'
+                  value={values.cpf}
+                  errors={errors}
+                  startAdornment={<AccountCircleOutlined />}
+                />
+                <Field
+                  name='password'
+                  handleChange={setFieldValue}
+                  label='Senha'
+                  value={values.password}
+                  errors={errors}
+                  type={showPassword ? 'text' : 'password'}
+                  startAdornment={<VpnKeyOutlined />}
+                  endAdornment={
+                    <IconButton aria-label='Toggle password visibility' onClick={() => setShowPassword(!showPassword)}>
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  }
+                />
+                {status && <Error variant='caption'>{status}</Error>}
+                <Button
+                  type='submit'
+                  fullWidth
+                  variant='outlined'
+                  style={{ alignSelf: 'flex-end' }}
+                  disabled={isSubmitting}
+                  id='submit-medical-record-button'
+                  onClick={() => handleSubmit()}
+                >
+                  {isSubmitting ? 'Autenticando...' : 'Entrar'}
+                </Button>
+              </Card>
+            </Paper>
+          </Wrapper>
+        </form>
       )}
     </Formik>
   )
