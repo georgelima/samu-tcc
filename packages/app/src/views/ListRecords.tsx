@@ -139,7 +139,7 @@ export const ListRecords = (props: RouteComponentProps) => {
                 offset: page * pageSize,
                 limit: pageSize,
                 orderDirection,
-                orderBy: String(orderBy && orderBy.field),
+                orderBy: orderBy && orderBy.field ? String(orderBy.field) : '',
               })
                 .then(
                   // @ts-ignore
@@ -150,7 +150,9 @@ export const ListRecords = (props: RouteComponentProps) => {
                       totalCount: res.totalCount,
                     }),
                 )
-                .catch((err: Error) => reject(err))
+                .catch((err: Error) => {
+                  reject(err)
+                })
             })
           }
           title='Atendimentos'
@@ -161,6 +163,7 @@ export const ListRecords = (props: RouteComponentProps) => {
               height: '40px !important',
             },
             exportButton: true,
+            search: false,
           }}
           detailPanel={rowData => <RecordTableDetail record={rowData} />}
           onChangeRowsPerPage={pageSize => setRowsPerPage(pageSize)}
