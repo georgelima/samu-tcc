@@ -1,15 +1,4 @@
-import ky from 'ky'
-
-import { Auth } from './auth'
-
-const client = ky.extend({
-  prefixUrl: String(process.env.REACT_APP_ENDPOINT),
-  retry: 3,
-  timeout: 20000,
-  headers: new Headers({
-    Authorization: Auth.getAuthToken(),
-  }),
-})
+import { api } from './apipeline'
 
 export const login = ({
   cpf,
@@ -18,14 +7,14 @@ export const login = ({
   cpf: string
   password: string
 }): Promise<{ token: string; error: string }> =>
-  client
-    .post('auth/login', {
-      json: {
+  api.post('login', {
+    fetchOptions: {
+      body: JSON.stringify({
         cpf,
         password,
-      },
-    })
-    .json()
+      }),
+    },
+  })
 
 export const getMedicalRecords = ({
   offset,
@@ -38,38 +27,39 @@ export const getMedicalRecords = ({
   orderDirection: string
   orderBy: string
 }) =>
-  client
-    .get('medical-records', {
-      searchParams: {
-        offset,
-        limit,
-        orderDirection,
-        orderBy,
-      },
-    })
-    .json()
+  api.get('get-medical-records', {
+    queryParameters: {
+      offset,
+      limit,
+      orderDirection,
+      orderBy,
+    },
+  })
 
 export const insertMedicalRecord = (body: any) =>
-  client
-    .post('medical-records', {
-      json: body,
-    })
-    .json()
+  api.post('insert-medical-records', {
+    fetchOptions: {
+      body: JSON.stringify(body),
+    },
+  })
 
-export const deleteMedicalRecord = (recordId: string) => ky.delete('medical-records/' + recordId).json()
+export const deleteMedicalRecord = (recordId: string) =>
+  api.delete('delete-medical-records', {
+    pathParameters: {
+      id: recordId,
+    },
+  })
 
 export const getAnalytics = ({ period }: { period: string }) =>
-  client
-    .get('medical-records/analytics', {
-      searchParams: {
-        period,
-      },
-    })
-    .json()
+  api.get('medical-records-analytics', {
+    queryParameters: {
+      period,
+    },
+  })
 
 export const generateReport = ({ from, to }: { from: string; to: string }) =>
-  client
-    .post('medical-records/report', {
-      json: { from, to },
-    })
-    .json()
+  api.post('generate-medical-records-report', {
+    fetchOptions: {
+      body: JSON.stringify({ from, to }),
+    },
+  })
