@@ -1,11 +1,10 @@
-import React, { Component, lazy, Suspense } from 'react'
+import React, { Component, lazy, Suspense, useEffect } from 'react'
 import { BrowserRouter } from 'react-router-dom'
 import { MuiThemeProvider, createMuiTheme, colors, Typography } from '@material-ui/core'
 import styled from 'styled-components'
+import unfetch from 'unfetch'
 
 import { PrivateRoute, AuthRoute } from './components/PrivateRoute'
-import { Header } from './components/Header'
-import { FullLoader } from './components/FullLoader'
 
 const Startup = lazy(() => import('./views/Startup').then(module => ({ default: module.Startup })))
 const Authorization = lazy(() => import('./views/Authorization').then(module => ({ default: module.Authorization })))
@@ -30,39 +29,44 @@ const LoadingWrapper = styled.div`
   justify-content: center;
 `
 
-class App extends Component {
-  render() {
-    return (
-      <MuiThemeProvider
-        theme={createMuiTheme({
-          palette: {
-            primary: colors.red,
-          },
-        })}
+const App = () => {
+  // Ping!!!
+  useEffect(() => {
+    unfetch(process.env.REACT_APP_ENDPOINT as string)
+      .then(() => console.log('SERVER - PING OK!'))
+      .catch(() => console.log('SERVER - PING ERROR!'))
+  }, [])
+
+  return (
+    <MuiThemeProvider
+      theme={createMuiTheme({
+        palette: {
+          primary: colors.red,
+        },
+      })}
+    >
+      <Suspense
+        fallback={
+          <LoadingWrapper>
+            <Typography>Carregando...</Typography>
+          </LoadingWrapper>
+        }
       >
-        <Suspense
-          fallback={
-            <LoadingWrapper>
-              <Typography>Carregando...</Typography>
-            </LoadingWrapper>
-          }
-        >
-          <BrowserRouter>
-            <>
-              <AuthRoute exact path='/entrar' component={Authorization} />
-              <Wrapper>
-                <PrivateRoute exact path='/' component={Startup} />
-                <PrivateRoute exact path='/dashboard' component={Dashboard} />
-                <PrivateRoute exact path='/novo' component={InsertMedicalRecord} />
-                <PrivateRoute exact path='/consulta' component={ListRecords} />
-                <PrivateRoute exact path='/relatorio' component={Reports} />
-              </Wrapper>
-            </>
-          </BrowserRouter>
-        </Suspense>
-      </MuiThemeProvider>
-    )
-  }
+        <BrowserRouter>
+          <>
+            <AuthRoute exact path='/entrar' component={Authorization} />
+            <Wrapper>
+              <PrivateRoute exact path='/' component={Startup} />
+              <PrivateRoute exact path='/dashboard' component={Dashboard} />
+              <PrivateRoute exact path='/novo' component={InsertMedicalRecord} />
+              <PrivateRoute exact path='/consulta' component={ListRecords} />
+              <PrivateRoute exact path='/relatorio' component={Reports} />
+            </Wrapper>
+          </>
+        </BrowserRouter>
+      </Suspense>
+    </MuiThemeProvider>
+  )
 }
 
 export default App
