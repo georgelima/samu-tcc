@@ -57,7 +57,7 @@ export const getAnalytics = ({ period }: { period: string }) =>
     },
   })
 
-export const generateReport = ({ from, to }: { from: string; to: string }) =>
+export const generateReport = ({ from, to }: { from: string | null; to: string | null }) =>
   api.post('generate-medical-records-report', {
     fetchOptions: {
       body: JSON.stringify({ from, to }),

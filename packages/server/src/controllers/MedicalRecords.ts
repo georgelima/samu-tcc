@@ -60,17 +60,21 @@ const incrementPath: (obj: object, path: string[]) => { [k: string]: any } = (ob
 export const MedicalRecordsController = {
   async generateReport(ctx: Context) {
     try {
-      const { body } = ctx.request
-      const { from, to } = body
+      const { from, to } = ctx.request.body
 
-      const startDate = stringToDate(from)
-      const endDate = stringToDate(to)
+      const startDate = from ? stringToDate(from) : null
+      const endDate = to ? stringToDate(to) : null
 
-      const records = await MedicalRecord.find({
-        date: { $gte: startDate, $lte: endDate },
-      }).populate('victimData')
-
-      // Start map
+      const records = await MedicalRecord.find(
+        startDate || endDate
+          ? {
+              date: {
+                ...(startDate ? { $gte: startDate } : {}),
+                ...(endDate ? { $lte: endDate } : {}),
+              },
+            }
+          : {},
+      ).populate('victimData')
 
       const result = records.reduce(
         (acc, cur) => {

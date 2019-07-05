@@ -7,7 +7,7 @@
     "dev": "ts-node-dev --respawn --transpileOnly -r dotenv/config ./src/index.ts",
     "prod": "tsc && node ./build/index.js",
     "start": "ts-node src/index.ts",
-    "deploy": "now -e JWT_SECRET=@jwt-secret -e MONGO_URL=@mongo-url"
+    "deploy": "now -e JWT_SECRET=@jwt-secret -e MONGODB_URI=@mongo-url"
   },
   "dependencies": {
     "@google/maps": "^0.5.5",

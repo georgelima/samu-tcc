@@ -28,6 +28,7 @@ const API_OPTIONS = {
       },
     }),
   ],
+  networkFirst: true,
 }
 
 const API_SERVICES = {

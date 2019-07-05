@@ -133,7 +133,7 @@ const renderValue = (value: any, total: number) => {
 }
 
 export const Reports = (props: RouteComponentProps) => {
-  const [range, setRange] = useState({
+  const [range, setRange] = useState<{ from: string | null; to: string | null }>({
     from: dateFns.format(dateFns.startOfMonth(new Date()), 'DD/MM/YYYY'),
     to: dateFns.format(dateFns.endOfMonth(new Date()), 'DD/MM/YYYY'),
   })
@@ -191,6 +191,11 @@ export const Reports = (props: RouteComponentProps) => {
                     to: formatDate(dateFns.endOfYear(today)),
                   })
                 }
+
+                setRange({
+                  from: null,
+                  to: null,
+                })
               }}
               options={DATE_INTERVALS}
             />
@@ -202,7 +207,7 @@ export const Reports = (props: RouteComponentProps) => {
                   name='from'
                   label='Data Início'
                   placeholder='DD/MM/YYYY'
-                  value={range.from}
+                  value={String(range.from)}
                   handleChange={(name, value) => setRange({ ...range, from: value })}
                   mask='99/99/9999'
                 />
@@ -212,7 +217,7 @@ export const Reports = (props: RouteComponentProps) => {
                   name='to'
                   label='Data Fim'
                   placeholder='DD/MM/YYYY'
-                  value={range.to}
+                  value={String(range.to)}
                   handleChange={(name, value) => setRange({ ...range, to: value })}
                   mask='99/99/9999'
                 />
@@ -228,7 +233,7 @@ export const Reports = (props: RouteComponentProps) => {
                 setSubmitting(true)
                 setData(null)
 
-                generateReport({ from: range.from, to: range.to })
+                generateReport({ from: range.from ? String(range.from) : null, to: range.to ? String(range.to) : null })
                   .then(data => setData(new Object(data)))
                   .catch(err => {
                     setSubmitting(false)
@@ -237,7 +242,7 @@ export const Reports = (props: RouteComponentProps) => {
                   })
               }}
               style={{ paddingTop: 15, paddingBottom: 15 }}
-              disabled={!range.from || !range.to || isSubmitting}
+              disabled={isSubmitting}
             >
               {isSubmitting ? 'Aguarde...' : 'Gerar'}
             </Button>
@@ -373,48 +378,6 @@ export const Reports = (props: RouteComponentProps) => {
                   <Text style={styles.key}>5.8 - AGRESSÃO</Text>
                   <Text style={styles.value}>{renderValue(data.traumaMechanism.aggression, data.total)}</Text>
                 </View>
-                {/* <div>
-    a) loc_oco – município de localidade da ocorrência; <br />
-    b) id – idade da vítima;
-    <br />
-    c) idh - Índice de Desenvolvimento Humano do município na época do estudo;
-    <br />
-    d) sanea - percentual de domicílios com saneamento básico na área (bairro) em estudo;
-    <br />
-    e) sex – sexo da vítima;
-    <br />
-    f) beb_alc – indício de bebida alcoolica;
-    <br />
-    g) tip_oco – tipo de ocorrência de acidente;
-    <br />
-    h) vit - vítima;
-    <br />
-    i) mei_loc – meio de locomoção da vítima;
-    <br />
-    j) mei_locO – meio de locomoção da outra parte envolvida;
-    <br />
-    k) Equ_seg – equipamento de segurança;
-    <br />
-    l) gla - glasgow;
-    <br />
-    m) res_ver – resposta verbal;
-    <br />
-    n) res_mot – resposta motora;
-    <br />
-    o) pup – pupila;
-    <br />
-    p) dor – escala de dor
-    <br />
-    q) pul – pulso
-    <br />
-    r) san – sangramento;
-    <br />
-    s) fra - fratura;
-    <br />
-    t) pro_rea – procedimento realizado;
-    <br />
-    u) óbt – óbito.
-    <br /> */}
                 <Text style={styles.sectionTitle}>Acidentes de Trânsito</Text>
                 <View style={styles.titleWrapper}>
                   <Text style={styles.key}>6 - TOTAL DE OCORRÊNCIAS</Text>
@@ -518,15 +481,6 @@ export const Reports = (props: RouteComponentProps) => {
                   </Text>
                   <Text style={styles.value}>{data.traumaMechanism.trafficAccident}</Text>
                 </View>
-                {/* car: result.frequenceByOtherInvolvedVehicle.CAR,
-          motorcycle: result.frequenceByOtherInvolvedVehicle.MOTORCYCLE,
-          truck: result.frequenceByOtherInvolvedVehicle.TRUCK,
-          bus: result.frequenceByOtherInvolvedVehicle.BUS,
-          van: result.frequenceByOtherInvolvedVehicle.VAN,
-          bike: result.frequenceByOtherInvolvedVehicle.BIKE,
-          noInformation: result.frequenceByOtherInvolvedVehicle.NO_INFORMATION,
-          pedestrian: result.frequenceByOtherInvolvedVehicle.PEDESTRIAN,
-          wallLampostTree: result.frequenceByOtherInvolvedVehicle.WALL_LAMPOST_TREE, */}
                 <View style={styles.subTitleWrapper}>
                   <Text style={styles.key}>9.1 - CARRO</Text>
                   <Text style={styles.value}>

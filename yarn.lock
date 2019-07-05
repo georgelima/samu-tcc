@@ -1958,10 +1958,9 @@ anymatch@^2.0.0:
     micromatch "^3.1.4"
     normalize-path "^2.1.1"
 
-apipeline@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/apipeline/-/apipeline-3.0.1.tgz#9e365d85a6a1365215ea7bec534ced41973dab2c"
-  integrity sha512-RKmVA874ZgWn92zGvNwFN9kZSfKv2npvMuHwHuBEom2VJH5HB1+Wtf7tSd1IN1TA4XOV0ftRNxMpfZ3qf75jbg==
+"apipeline@https://github.com/mpatafio/apipeline#009b1adaca027434c8644b24dd09c20aa323b170":
+  version "3.1.0"
+  resolved "https://github.com/mpatafio/apipeline#009b1adaca027434c8644b24dd09c20aa323b170"
   dependencies:
     jssha "^2.3.1"
     lodash.mapvalues "^4.6.0"

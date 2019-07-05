@@ -2,7 +2,7 @@ import * as mongoose from 'mongoose'
 
 export const connect = () => {
   return new Promise((resolve, reject) => {
-    mongoose.connect(process.env.MONGO_URL, { useNewUrlParser: true })
+    mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true })
 
     mongoose.connection.on('connected', () => {
       console.log('[Mongoose] - Connected')
