@@ -1958,9 +1958,9 @@ anymatch@^2.0.0:
     micromatch "^3.1.4"
     normalize-path "^2.1.1"
 
-"apipeline@https://github.com/mpatafio/apipeline#009b1adaca027434c8644b24dd09c20aa323b170":
+apipeline@georgelima/apipeline:
   version "3.1.0"
-  resolved "https://github.com/mpatafio/apipeline#009b1adaca027434c8644b24dd09c20aa323b170"
+  resolved "https://codeload.github.com/georgelima/apipeline/tar.gz/009b1adaca027434c8644b24dd09c20aa323b170"
   dependencies:
     jssha "^2.3.1"
     lodash.mapvalues "^4.6.0"
