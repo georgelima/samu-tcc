@@ -1,8 +1,6 @@
 FROM node:10-jessie-slim
 WORKDIR /app
 
-ENV MONGODB_URI
-
 COPY package.json .
 
 COPY . .
