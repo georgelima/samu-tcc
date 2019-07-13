@@ -96,7 +96,7 @@ export const ListRecords = (props: RouteComponentProps) => {
               title: 'Classificação de Risco',
               field: 'riskRating',
               render: record => (
-                <Tooltip title={getRiskRating(record.riskRating)} placement='top-start'>
+                <Tooltip title={getRiskRating(record.riskRating)} placement="top-start">
                   <Brightness1 nativeColor={record.riskRating} />
                 </Tooltip>
               ),
@@ -110,7 +110,7 @@ export const ListRecords = (props: RouteComponentProps) => {
               title: 'Ações',
               field: '',
               render: record => (
-                <Tooltip title='Remover' placement='top-start'>
+                <Tooltip title="Remover" placement="top-start">
                   <IconButton
                     onClick={() => {
                       const yes = confirm('Deseja confirmar a remoção da ficha: ' + record.occurrenceNumber)
@@ -155,7 +155,7 @@ export const ListRecords = (props: RouteComponentProps) => {
                 })
             })
           }
-          title='Atendimentos'
+          title="Atendimentos"
           options={{
             pageSize: rowsPerPage,
             pageSizeOptions: ROWS_PER_PAGE_OPTIONS,

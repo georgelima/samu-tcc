@@ -1,19 +1,22 @@
-import React, { Component, lazy, Suspense, useEffect } from 'react'
-import { BrowserRouter } from 'react-router-dom'
+import React, { lazy, Suspense, useEffect } from 'react'
+import { BrowserRouter, Route, Redirect } from 'react-router-dom'
 import { MuiThemeProvider, createMuiTheme, colors, Typography } from '@material-ui/core'
 import styled from 'styled-components'
 import unfetch from 'unfetch'
 
 import { PrivateRoute, AuthRoute } from './components/PrivateRoute'
 
+import {InsertMedicalRecord} from './views/InsertMedicalRecord'
+
 const Startup = lazy(() => import('./views/Startup').then(module => ({ default: module.Startup })))
 const Authorization = lazy(() => import('./views/Authorization').then(module => ({ default: module.Authorization })))
 const Dashboard = lazy(() => import('./views/Dashboard').then(module => ({ default: module.Dashboard })))
-const InsertMedicalRecord = lazy(() =>
-  import('./views/InsertMedicalRecord').then(module => ({ default: module.InsertMedicalRecord })),
-)
+// const InsertMedicalRecord = lazy(() =>
+//   import('./views/InsertMedicalRecord').then(module => ({ default: module.InsertMedicalRecord })),
+// )
 const ListRecords = lazy(() => import('./views/ListRecords').then(module => ({ default: module.ListRecords })))
 const Reports = lazy(() => import('./views/Reports').then(module => ({ default: module.Reports })))
+const Users = lazy(() => import('./views/Users').then(module => ({ default: module.Users })))
 
 const Wrapper = styled.div`
   padding-left: 20px;
@@ -54,13 +57,14 @@ const App = () => {
       >
         <BrowserRouter>
           <>
-            <AuthRoute exact path='/entrar' component={Authorization} />
+            <AuthRoute exact path="/entrar" component={Authorization} />
             <Wrapper>
-              <PrivateRoute exact path='/' component={Startup} />
-              <PrivateRoute exact path='/dashboard' component={Dashboard} />
-              <PrivateRoute exact path='/novo' component={InsertMedicalRecord} />
-              <PrivateRoute exact path='/consulta' component={ListRecords} />
-              <PrivateRoute exact path='/relatorio' component={Reports} />
+              <PrivateRoute exact path="/" component={Startup} />
+              <PrivateRoute exact path="/dashboard" component={Dashboard} />
+              <PrivateRoute exact path="/novo" component={InsertMedicalRecord} />
+              <PrivateRoute exact path="/consulta" component={ListRecords} />
+              <PrivateRoute exact path="/relatorio" component={Reports} />
+              <PrivateRoute exact path="/usuarios" component={Users} />
             </Wrapper>
           </>
         </BrowserRouter>

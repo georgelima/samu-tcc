@@ -12,6 +12,7 @@ import { authHandler } from '../middleware/AuthHandler'
 
 import medicalRecordsRouter from '../routes/MedicalRecord'
 import authRoter from '../routes/Auth'
+import usersRouter from '../routes/Users'
 
 export const createServer = async () => {
   console.log('[Server] - Starting')
@@ -29,6 +30,8 @@ export const createServer = async () => {
     .use(authHandler())
     .use(medicalRecordsRouter.routes())
     .use(medicalRecordsRouter.allowedMethods())
+    .use(usersRouter.routes())
+    .use(usersRouter.allowedMethods())
     .use(notFoundHandler())
 
   const server = http.createServer(app.callback())

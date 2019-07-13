@@ -35,7 +35,7 @@ export const getUserByJWT = async (token: string) => {
       return null
     }
 
-    return await User.findOne({ _id: decodedJWT.sub })
+    return await User.findOne({ _id: decodedJWT.sub }).select('-password')
   } catch (err) {
     console.log(err)
     return null

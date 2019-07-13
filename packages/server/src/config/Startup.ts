@@ -10,8 +10,10 @@ export const startup = async () => {
   if (hasUser) return
 
   const user = new User({
+    name: 'Admin',
     cpf: '12345678900',
     password: await encryptPassword(sha256('123456')),
+    isAdmin: true,
   })
 
   await user.save()

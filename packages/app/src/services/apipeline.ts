@@ -60,6 +60,32 @@ const API_SERVICES = {
     responseMiddleware: res => ({ ...res, timestamp: Date.now() }),
     method: 'POST',
   },
+  'list-users': {
+    path: 'users',
+    responseMiddleware: res => ({ ...res, timestamp: Date.now() }),
+    method: 'GET',
+  },
+  'toggle-admin': {
+    path: 'users/toggle-admin',
+    responseMiddleware: res => ({ ...res, timestamp: Date.now() }),
+    method: 'POST',
+  },
+  'create-user': {
+    path: 'users',
+    responseMiddleware: res => ({ ...res, timestamp: Date.now() }),
+    method: 'POST',
+  },
+  'delete-user': {
+    path: 'users/:id',
+    responseMiddleware: res => ({ ...res, timestamp: Date.now() }),
+    disableCache: true,
+    method: 'DELETE',
+  },
+  'current-user': {
+    path: 'users/current',
+    responseMiddleware: res => ({ ...res, timestamp: Date.now() }),
+    method: 'GET',
+  },
 }
 
 // @ts-ignore

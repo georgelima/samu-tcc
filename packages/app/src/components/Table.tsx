@@ -78,11 +78,12 @@ export const Table = memo(({ ...props }: MaterialTableProps) => (
       OverlayLoading: () => (
         <LoadingWrapper>
           <LoadingWrapperCell>
-            <CircularProgress color='primary' />
+            <CircularProgress color="primary" />
           </LoadingWrapperCell>
         </LoadingWrapper>
       ),
     }}
+    // @ts-ignore
     icons={tableIcons}
     localization={{
       pagination: {

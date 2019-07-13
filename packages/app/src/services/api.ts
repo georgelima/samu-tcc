@@ -63,3 +63,28 @@ export const generateReport = ({ from, to }: { from: string | null; to: string |
       body: JSON.stringify({ from, to }),
     },
   })
+
+export const listUsers = () => api.get('list-users')
+
+export const toggleAdmin = ({ userId }: { userId: string }) =>
+  api.post('toggle-admin', {
+    fetchOptions: {
+      body: JSON.stringify({ userId }),
+    },
+  })
+
+export const createUser = (body: { name: string; cpf: string; isAdmin: boolean; password: string }) =>
+  api.post('create-user', {
+    fetchOptions: {
+      body: JSON.stringify(body),
+    },
+  })
+
+export const deleteUser = (userId: string) =>
+  api.delete('delete-user', {
+    pathParameters: {
+      id: userId,
+    },
+  })
+
+export const currentUser = () => api.get('current-user')

@@ -20,6 +20,7 @@ export type Props = {
   endAdornment?: React.ReactElement
   className?: string
   mask?: string
+  margin?: 'none' | 'dense' | 'normal'
 }
 
 type State = {
@@ -47,6 +48,14 @@ export class TextInput extends React.Component<Props, State> {
     )
   }
 
+  componentDidUpdate(prevProps:Props) {
+    if (this.props.value !== prevProps.value) {
+      this.setState({
+        value: this.props.value
+      })
+    }
+  }
+
   render() {
     const {
       name,
@@ -63,6 +72,7 @@ export class TextInput extends React.Component<Props, State> {
       endAdornment,
       className,
       mask,
+      margin,
     } = this.props
 
     const { value } = this.state
@@ -71,8 +81,9 @@ export class TextInput extends React.Component<Props, State> {
 
     return (
       <TextField
+        margin={margin}
         name={name}
-        variant='outlined'
+        variant="outlined"
         label={label}
         value={value}
         onChange={event =>
@@ -91,56 +102,11 @@ export class TextInput extends React.Component<Props, State> {
           style: {
             boxSizing: 'border-box',
           },
-          startAdornment: startAdornment ? <InputAdornment position='start'>{startAdornment}</InputAdornment> : null,
-          endAdornment: endAdornment ? <InputAdornment position='end'>{endAdornment}</InputAdornment> : null,
+          startAdornment: startAdornment ? <InputAdornment position="start">{startAdornment}</InputAdornment> : null,
+          endAdornment: endAdornment ? <InputAdornment position="end">{endAdornment}</InputAdornment> : null,
         }}
         className={className}
       />
     )
   }
-}
-
-export const TextInput1 = ({
-  name,
-  label,
-  value,
-  handleChange,
-  helperText,
-  errors,
-  placeholder,
-  type,
-  multiline,
-  rows,
-  style,
-  startAdornment,
-  endAdornment,
-  className,
-}: Props) => {
-  const hasError = Boolean(errors && errors[name])
-
-  return (
-    <TextField
-      name={name}
-      variant='outlined'
-      label={label}
-      value={value}
-      onChange={event => handleChange(name, event.target.value)}
-      helperText={hasError ? `O campo ${label} é obrigatório` : helperText}
-      fullWidth
-      error={hasError}
-      placeholder={placeholder}
-      type={type}
-      multiline={multiline}
-      rows={rows}
-      style={style}
-      InputProps={{
-        style: {
-          boxSizing: 'border-box',
-        },
-        startAdornment: startAdornment ? <InputAdornment position='start'>{startAdornment}</InputAdornment> : null,
-        endAdornment: endAdornment ? <InputAdornment position='end'>{endAdornment}</InputAdornment> : null,
-      }}
-      className={className}
-    />
-  )
 }

@@ -73,8 +73,8 @@ export const Dashboard = (props: RouteComponentProps) => {
         <Grid item xs={8} />
         <Grid item xs={12} sm={4} style={{ marginTop: '15px' }}>
           <Select
-            name='Período'
-            label='Período'
+            name="Período"
+            label="Período"
             options={[
               { label: 'Últimos 7 dias', value: PERIOD.LAST_7_DAYS },
               { label: 'Últimos 30 dias', value: PERIOD.LAST_30_DAYS },
@@ -102,22 +102,22 @@ export const Dashboard = (props: RouteComponentProps) => {
                 {
                   label: 'Frequência de Ocorrências',
                   children: (
-                    <Box title='Frequência de Ocorrências' subtitle='Últimos 30 dias'>
+                    <Box title="Frequência de Ocorrências" subtitle="Últimos 30 dias">
                       {Object.keys(data.frequency).length === 0 ? (
-                        <Typography variant='caption' color='primary'>
+                        <Typography variant="caption" color="primary">
                           Sem ocorrências nos últimos 30 dias
                         </Typography>
                       ) : (
-                        <ResponsiveContainer height={200} width='100%'>
+                        <ResponsiveContainer height={200} width="100%">
                           <LineChart
                             data={Object.keys(data.frequency).map(key => ({
                               name: key,
                               frequency: data.frequency[key],
                             }))}
                           >
-                            <XAxis dataKey='name' />
-                            <YAxis scale='ordinal' />
-                            <Line type='monotone' dataKey='frequency' strokeWidth={2} />
+                            <XAxis dataKey="name" />
+                            <YAxis scale="ordinal" />
+                            <Line type="monotone" dataKey="frequency" strokeWidth={2} />
                             <Tooltip formatter={value => [value, 'Ocorrências']} />
                           </LineChart>
                         </ResponsiveContainer>
@@ -156,6 +156,7 @@ export const Dashboard = (props: RouteComponentProps) => {
                               })
                               .filter(Boolean),
                           }}
+                          layerTypes={['TrafficLayer']}
                         />
                       }
                     </div>
@@ -166,11 +167,11 @@ export const Dashboard = (props: RouteComponentProps) => {
           </Grid>
 
           <Grid item xs={12} md={3}>
-            <Box title='Frequência de Ocorrências por Sexo' subtitle=''>
-              <ResponsiveContainer height={350} width='100%'>
+            <Box title="Frequência de Ocorrências por Sexo" subtitle="">
+              <ResponsiveContainer height={350} width="100%">
                 <PieChart>
                   <Pie
-                    dataKey='value'
+                    dataKey="value"
                     isAnimationActive
                     data={[
                       { value: data.frequencyByGender['M'], name: 'Homens' },
@@ -179,7 +180,7 @@ export const Dashboard = (props: RouteComponentProps) => {
                     ]}
                     innerRadius={60}
                     outerRadius={80}
-                    fill='#F00'
+                    fill="#F00"
                     label
                     paddingAngle={5}
                   >
@@ -194,25 +195,25 @@ export const Dashboard = (props: RouteComponentProps) => {
             </Box>
           </Grid>
           <Grid item xs={12} md={3}>
-            <Box title='Frequência de Ocorrências por Idade' subtitle=''>
+            <Box title="Frequência de Ocorrências por Idade" subtitle="">
               {Object.keys(data.frequencyByAge).length > 0 ? (
-                <ResponsiveContainer height={350} width='100%'>
+                <ResponsiveContainer height={350} width="100%">
                   <BarChart
                     data={Object.keys(data.frequencyByAge).map(key => ({
                       name: key.replace(' ', ''),
                       value: data.frequencyByAge[key],
                     }))}
                   >
-                    <CartesianGrid strokeDasharray='3 3' />
-                    <XAxis dataKey='name' />
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
                     <YAxis />
                     <Tooltip
-                      separator=''
+                      separator=""
                       formatter={(value, name, elem) => {
                         return [`${value} ${value > 1 ? 'ocorrências' : 'ocorrência'} nessa faixa etária`]
                       }}
                     />
-                    <Bar dataKey='value' fill='#8884d8' />
+                    <Bar dataKey="value" fill="#8884d8" />
                   </BarChart>
                 </ResponsiveContainer>
               ) : (
@@ -221,8 +222,8 @@ export const Dashboard = (props: RouteComponentProps) => {
             </Box>
           </Grid>
           <Grid item xs={12} md={6}>
-            <Box title='Frequência de Ocorrências por Mecanismo do Trauma' subtitle=''>
-              <ResponsiveContainer height={350} width='100%'>
+            <Box title="Frequência de Ocorrências por Mecanismo do Trauma" subtitle="">
+              <ResponsiveContainer height={350} width="100%">
                 <RadialBarChart
                   innerRadius={20}
                   outerRadius={140}
@@ -270,10 +271,10 @@ export const Dashboard = (props: RouteComponentProps) => {
                     },
                   ]}
                 >
-                  <RadialBar label={{ position: 'insideStart', fill: '#666' }} background dataKey='value' />
+                  <RadialBar label={{ position: 'insideStart', fill: '#666' }} background dataKey="value" />
                   <Legend />
                   <Tooltip
-                    separator=''
+                    separator=""
                     formatter={(value, name, elem) => {
                       return [`${value} ${value > 1 ? 'ocorrências' : 'ocorrência'} por ${elem.payload.name}`]
                     }}

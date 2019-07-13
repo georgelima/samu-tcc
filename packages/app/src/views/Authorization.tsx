@@ -53,6 +53,11 @@ const Field = styled(TextInput)`
   }
 `
 
+const AlertWrapper = styled.div`
+  margin-right: 10px;
+  margin-left: 10px;
+`
+
 export const Authorization = (props: RouteComponentProps) => {
   const [showPassword, setShowPassword] = useState(false)
 
@@ -90,41 +95,57 @@ export const Authorization = (props: RouteComponentProps) => {
         <form onSubmit={handleSubmit}>
           <Wrapper>
             <Paper>
-              Credenciais para teste <br />
-              cpf: 123.456.789-00 password: 123456
-              <Heading variant='h4'>WebSAMU</Heading>
+              <Heading variant="h4">WebSAMU</Heading>
+              <AlertWrapper>
+                <div className="alert alert-success" role="alert">
+                  <Typography variant="caption">Para fim de testes, você pode usar as credenciais abaixo:</Typography>
+                  <br />
+                  {
+                    // @ts-ignore
+                    <Typography variant="overline" gutterBottom>
+                      CPF: <strong>123.456.789-00</strong>
+                    </Typography>
+                  }
+                  {
+                    // @ts-ignore
+                    <Typography variant="overline" gutterBottom>
+                      Senha: 123456
+                    </Typography>
+                  }
+                </div>
+              </AlertWrapper>
               <Card>
                 <Field
-                  mask='999.999.999-99'
-                  name='cpf'
+                  mask="999.999.999-99"
+                  name="cpf"
                   handleChange={setFieldValue}
-                  label='CPF'
+                  label="CPF"
                   value={values.cpf}
                   errors={errors}
                   startAdornment={<AccountCircleOutlined />}
                 />
                 <Field
-                  name='password'
+                  name="password"
                   handleChange={setFieldValue}
-                  label='Senha'
+                  label="Senha"
                   value={values.password}
                   errors={errors}
                   type={showPassword ? 'text' : 'password'}
                   startAdornment={<VpnKeyOutlined />}
                   endAdornment={
-                    <IconButton aria-label='Toggle password visibility' onClick={() => setShowPassword(!showPassword)}>
+                    <IconButton aria-label="Toggle password visibility" onClick={() => setShowPassword(!showPassword)}>
                       {showPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
                   }
                 />
-                {status && <Error variant='caption'>{status}</Error>}
+                {status && <Error variant="caption">{status}</Error>}
                 <Button
-                  type='submit'
+                  type="submit"
                   fullWidth
-                  variant='outlined'
+                  variant="outlined"
                   style={{ alignSelf: 'flex-end' }}
                   disabled={isSubmitting}
-                  id='submit-medical-record-button'
+                  id="submit-medical-record-button"
                   onClick={() => handleSubmit()}
                 >
                   {isSubmitting ? 'Autenticando...' : 'Entrar'}
