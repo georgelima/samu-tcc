@@ -52,9 +52,10 @@ const PERIOD = {
 }
 
 export const Dashboard = (props: RouteComponentProps) => {
-  const [coords, setCoords] = useState({ lat: -2.9035129, lng: -41.768620299999995 })
-  const [period, setPeriod] = useState(PERIOD.LAST_7_DAYS)
+  const [coords, setCoords] = useState({ lat: -6.2370407, lng: -42.6921364 })
+  const [period, setPeriod] = useState(PERIOD.LAST_30_DAYS)
   const { error, isLoading, response: data, refetch, isRefetching } = useQuery(getAnalytics, { period })
+  const [mapPositions, setMapPositions] = useState([])
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -66,6 +67,26 @@ export const Dashboard = (props: RouteComponentProps) => {
       )
     }
   }, [])
+
+  useEffect(() => {
+    if (data) {
+      setMapPositions(
+        data.lastRecords
+          // @ts-ignore
+          .map(({ occurrenceLocation }) => {
+            if (occurrenceLocation.lat && occurrenceLocation.lng) {
+              return {
+                lat: occurrenceLocation.lat,
+                lng: occurrenceLocation.lng,
+              }
+            } else {
+              return null
+            }
+          })
+          .filter(Boolean),
+      )
+    }
+  }, [data])
 
   return (
     <Layout {...props}>
@@ -102,10 +123,10 @@ export const Dashboard = (props: RouteComponentProps) => {
                 {
                   label: 'Frequência de Ocorrências',
                   children: (
-                    <Box title="Frequência de Ocorrências" subtitle="Últimos 30 dias">
+                    <Box title="Frequência de Ocorrências" subtitle="No período selecionado">
                       {Object.keys(data.frequency).length === 0 ? (
                         <Typography variant="caption" color="primary">
-                          Sem ocorrências nos últimos 30 dias
+                          Sem ocorrências no período
                         </Typography>
                       ) : (
                         <ResponsiveContainer height={200} width="100%">
@@ -116,8 +137,7 @@ export const Dashboard = (props: RouteComponentProps) => {
                             }))}
                           >
                             <XAxis dataKey="name" />
-                            <YAxis scale="ordinal" />
-                            <Line type="monotone" dataKey="frequency" strokeWidth={2} />
+                            <Line type="monotone" dataKey="frequency" strokeWidth={2} stroke="#F00" />
                             <Tooltip formatter={value => [value, 'Ocorrências']} />
                           </LineChart>
                         </ResponsiveContainer>
@@ -126,7 +146,7 @@ export const Dashboard = (props: RouteComponentProps) => {
                   ),
                 },
                 {
-                  label: 'Mapa de Calor (Beta)',
+                  label: 'Mapa de Calor',
                   children: (
                     <div style={{ width: '100%', height: 'calc(100vh - 65px)' }}>
                       {
@@ -142,19 +162,7 @@ export const Dashboard = (props: RouteComponentProps) => {
                           }}
                           heatmapLibrary={true}
                           heatmap={{
-                            positions: data.lastRecords
-                              // @ts-ignore
-                              .map(({ occurrenceLocation }) => {
-                                if (occurrenceLocation.lat && occurrenceLocation.lng) {
-                                  return {
-                                    lat: occurrenceLocation.lat,
-                                    lng: occurrenceLocation.lng,
-                                  }
-                                } else {
-                                  return null
-                                }
-                              })
-                              .filter(Boolean),
+                            positions: mapPositions,
                           }}
                           layerTypes={['TrafficLayer']}
                         />

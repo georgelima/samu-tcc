@@ -483,56 +483,68 @@ export class InsertMedicalRecord extends React.Component<RouteComponentProps, St
 
   _generateRandom = (min: number, max: number) => String(Math.floor(min + Math.random() * (max + 1 - min)))
 
+  _generateRandomDate = (from, to) =>  {
+    const nfrom = from.getTime();
+    const nto = to.getTime();
+    return new Date(nfrom + Math.random() * (nto - nfrom));
+  }
+
   randomData = (values, setValues) => {
     const locations = [
-      ['Rua Abdon Moura', 135, 'Centro', 'Amarante'],
-      ['Avenida Dirceu Arcoverde', 459, 'Centro', 'Amarante'],
-      ['Rua Treze de Junho', 77, 'Centro', 'Amarante'],
-      ['Avenida Afrânio Filho', 662, 'Centro', 'Amarante'],
-      ['Avenida Francisco Lira', 'S/N', 'Centro', 'Amarante'],
-      ['Rua Regeneração', 939, 'Centro', 'Amarante'],
+      ['Rua Abdon Santana', 73, 'Centro', 'Regeneração'],
+      ['Rua Francisco Nunes', 183, 'Centro', 'Regeneração'],
+      ['Rua Paulo César de Moraes', 48, 'Centro', 'Regeneração'],
+      ['Rua Leal de Mendes', 888, 'Centro', 'Regeneração'],
+      ['Rua Manoel Lopes', 103, 'Alto do Balanço', 'Regeneração'],
+      ['Avenida Alberto Leal Nunes', 1501, 'Alto do Balanço', 'Regeneração'],
     ]
 
     const addr = locations[this._generateRandom(0, 5)]
+    
+    const rawDate = this._generateRandomDate(
+      dateFns.subMonths(new Date(), 8), new Date()
+    )
+    const date = dateFns.format(rawDate, 'DD/MM/YYYY')
+    const time = dateFns.format(rawDate,'hh:mm')
 
     setValues({
       ...values,
-      vtr:this._generateRandom(1000, 10000), 
-      riskRating:Object.keys(RISK_RATING)[Number(this._generateRandom(0, 3))],
-      occurrenceNumber:this._generateRandom(10000, 30000),
-      date: `${this._generateRandom(10, 20)}/${this._generateRandom(1, 7)}/2018`,
-      time: `${this._generateRandom(10, 20)}:${this._generateRandom(10, 50)}`,
+      vtr: this._generateRandom(1000, 10000),
+      riskRating: Object.keys(RISK_RATING)[Number(this._generateRandom(0, 3))],
+      occurrenceNumber: this._generateRandom(10000, 30000),
+      date,
+      time,
       doctor: 'Guilherme Lima',
       requestReason: Object.keys(REQUEST_REASON)[Number(this._generateRandom(0, 6))],
-      location:LOCATION.STREET,
+      location: LOCATION.STREET,
       address: addr[0],
       addressNumber: addr[1],
       neighborhood: addr[2],
       city: addr[3],
       victimSituation: Object.keys(VICTIM_SITUATION)[Number(this._generateRandom(0, 3))],
       complications: Object.keys(COMPLICATIONS)[Number(this._generateRandom(0, 3))],
-      victimName:`Fulano ${this._generateRandom(0, 10)} - ${this._generateRandom(10, 100)}`,
-      victimDoc:this._generateRandom(1000000, 9000000),
-      victimAge:this._generateRandom(2, 70),
-      victimGender:Number(this._generateRandom(0, 1000000)) % 2 === 0 ? 'M' : 'F',
+      victimName: `Fulano ${this._generateRandom(0, 10)} - ${this._generateRandom(10, 100)}`,
+      victimDoc: this._generateRandom(1000000, 9000000),
+      victimAge: this._generateRandom(2, 70),
+      victimGender: Number(this._generateRandom(0, 1000000)) % 2 === 0 ? 'M' : 'F',
       victimAddress: 'Avenida Dirceu Arcoverde',
       victimAddressNeighborhood: 'Centro',
       victimAddressCity: 'Amarante',
       allergy: Object.keys(ALLERGY)[Number(this._generateRandom(0, 2))],
-      personalBackground:[
+      personalBackground: [
         Object.keys(PERSONAL_BACKGROUND)[Number(this._generateRandom(0, 2))],
         Object.keys(PERSONAL_BACKGROUND)[Number(this._generateRandom(3, 5))],
         Object.keys(PERSONAL_BACKGROUND)[Number(this._generateRandom(6, 8))],
       ],
-      glasgowOcularOpeningAdult:this._generateRandom(1, 4),
-      glasgowVerbalResponseAdult:this._generateRandom(1, 5),
-      glasgowMotorResponseAdult:this._generateRandom(1, 6),
-      traumaMechanism:Object.keys(TRAUMA_MECHANISM)[Number(this._generateRandom(1, 8))],
-      responsive:true,
-      performedProcedures:[
+      glasgowOcularOpeningAdult: this._generateRandom(1, 4),
+      glasgowVerbalResponseAdult: this._generateRandom(1, 5),
+      glasgowMotorResponseAdult: this._generateRandom(1, 6),
+      traumaMechanism: Object.keys(TRAUMA_MECHANISM)[Number(this._generateRandom(1, 8))],
+      responsive: true,
+      performedProcedures: [
         Object.keys(PERFORMED_PROCEDURES)[Number(this._generateRandom(0, 8))],
         Object.keys(PERFORMED_PROCEDURES)[Number(this._generateRandom(9, 18))],
-      ]
+      ],
     })
 
     window.scrollTo(0, document.body.scrollHeight)
@@ -672,7 +684,7 @@ export class InsertMedicalRecord extends React.Component<RouteComponentProps, St
                   fullWidth
                   variant="outlined"
                   style={{ alignSelf: 'flex-end' }}
-                  onClick={evt => this.randomData(values,setValues)}
+                  onClick={evt => this.randomData(values, setValues)}
                   disabled={isSubmitting}
                   id="generate-random-data-button"
                 >
