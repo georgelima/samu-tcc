@@ -24,7 +24,7 @@
     "koa-compress": "^3.0.0",
     "koa-helmet": "^4.1.0",
     "koa-router": "^7.4.0",
-    "mongoose": "^5.5.4",
+    "mongoose": "^5.7.5",
     "mongoose-delete": "^0.5.0",
     "ramda": "^0.26.1",
     "reflect-metadata": "^0.1.10",
